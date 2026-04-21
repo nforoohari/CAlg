@@ -1,35 +1,70 @@
 package Algs;
 
-public class Alg1 {
+import java.util.Date;
 
-    static boolean buy(CNames cNames, Float priceLimit, Float volume) {
+public class Alg1Thread extends Thread {
+
+    private CNames cNames;
+    private Float priceLimit;
+    private Float volume;
+    private Float deltaPrice;
+    private volatile boolean running;
+
+    public Alg1Thread(CNames cNames, Float priceLimit, Float volume, Float deltaPrice) {
+        this.cNames = cNames;
+        this.priceLimit = priceLimit;
+        this.volume = volume;
+        this.deltaPrice = deltaPrice;
+        this.running = true;
+    }
+
+
+    public void stopThread() {
+        running = false;
+    }
+
+    boolean buy(CNames cNames, Float priceLimit, Float volume) {
         return buyProxy(cNames, priceLimit, volume);
     }
 
-    static boolean sell(CNames cNames, Float priceLimit, Float volume) {
+    boolean sell(CNames cNames, Float priceLimit, Float volume) {
         return sellProxy(cNames, priceLimit, volume);
     }
 
-    static MInfo getLastMI(CNames cNames) {
+    MInfo getLastMI(CNames cNames) {
         return getLastMIProxy(cNames);
     }
 
-    static boolean buyProxy(CNames cNames, Float priceLimit, Float volume) {
+    boolean buyProxy(CNames cNames, Float priceLimit, Float volume) {
         System.out.println("BuyProxy  , " + "priceLimit : " + priceLimit + " cNames : " + cNames + " , code : " + cNames.getCode() + " , volume : " + volume);
         return true;
     }
 
-    static boolean sellProxy(CNames cNames, Float priceLimit, Float volume) {
+    boolean sellProxy(CNames cNames, Float priceLimit, Float volume) {
         System.out.println("SellProxy , " + "priceLimit : " + priceLimit + " cNames : " + cNames + " , code : " + cNames.getCode() + " , volume : " + volume);
         return true;
     }
 
-    static MInfo getLastMIProxy(CNames cNames) {
+    MInfo getLastMIProxy(CNames cNames) {
         // WebService Call
-        return new MInfo(CNames.BBB, 1F, 2F, 0.5F, 2.5F, 10F);
+        return new MInfo(CNames.BBB, 1F, 2F, 0.5F, 4.5F, 10F);
     }
 
-    static void startAlg1(CNames cNames, Float priceLimit, Float volume, Float deltaPrice) {
+    @Override
+    public void run() {
+        System.out.println("Thread started at : " + new Date());
+        while (running) {
+
+            System.out.println("Thread is running...");
+
+            startAlg1(this.cNames, this.priceLimit, this.volume, this.deltaPrice);
+
+        }
+
+        System.out.println("Thread stopped safely at : " + new Date());
+    }
+
+    void startAlg1(CNames cNames, Float priceLimit, Float volume, Float deltaPrice) {
 
         boolean buyCheck = false;
         boolean sellCheck = false;
@@ -61,6 +96,8 @@ public class Alg1 {
                 }
             }
         }
-
     }
 }
+
+
+
