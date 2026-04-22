@@ -1,11 +1,5 @@
 package Algs;
 
-//public enum CNames {
-//    BBB,
-//    EEE,
-//    TTT
-//}
-
 public enum CNames {
     BBB(1),
     EEE(2),
