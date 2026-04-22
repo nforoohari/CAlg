@@ -5,19 +5,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class BTCExcelReader {
+public class CExcelReader {
 
     private final Workbook workbook;
     private final Sheet sheet;
     private int currentRow = 1;   // رد شدن از ردیف header
 
-    public BTCExcelReader(String filePath) throws IOException {
+    public CExcelReader(String filePath) throws IOException {
         FileInputStream fis = new FileInputStream(filePath);
         this.workbook = new XSSFWorkbook(fis);
         this.sheet = workbook.getSheetAt(0);
     }
 
-    public BTCRecord getNext() {
+    public CRecord getNext() {
         if (currentRow > sheet.getLastRowNum()) {
             return null;    // تمام شد
         }
@@ -34,7 +34,7 @@ public class BTCExcelReader {
         double close    = row.getCell(4).getNumericCellValue();
         double volume   = row.getCell(5).getNumericCellValue();
 
-        return new BTCRecord(date, open, high, low, close, volume);
+        return new CRecord(date, open, high, low, close, volume);
     }
 
     public void close() throws IOException {

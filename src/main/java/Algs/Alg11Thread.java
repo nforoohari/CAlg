@@ -1,21 +1,32 @@
 package Algs;
 
+import java.io.IOException;
 import java.util.Date;
 
-public class Alg1Thread extends Thread {
+public class Alg11Thread extends Thread {
 
-    private CNames cNames;
-    private Float priceLimit;
-    private Float volume;
-    private Float deltaPrice;
+    private final CNames cNames;
+    private final Double priceLimit;
+    private final Double volume;
+    private final Double deltaPrice;
     private volatile boolean running;
+    private CExcelReader reader;
 
-    public Alg1Thread(CNames cNames, Float priceLimit, Float volume, Float deltaPrice) {
+
+    public Alg11Thread(CNames cNames, Double priceLimit, Double volume, Double deltaPrice) throws IOException {
         this.cNames = cNames;
         this.priceLimit = priceLimit;
         this.volume = volume;
         this.deltaPrice = deltaPrice;
         this.running = true;
+        try {
+             this.reader = new CExcelReader("C:\\Users\\n_foroohari\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_dummy_year.xlsx");
+             System.out.println("The file was read.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.reader.close();
+
+        }
     }
 
 
@@ -23,11 +34,11 @@ public class Alg1Thread extends Thread {
         running = false;
     }
 
-    boolean buy(CNames cNames, Float priceLimit, Float volume) {
+    boolean buy(CNames cNames, Double priceLimit, Double volume) {
         return buyProxy(cNames, priceLimit, volume);
     }
 
-    boolean sell(CNames cNames, Float priceLimit, Float volume) {
+    boolean sell(CNames cNames, Double priceLimit, Double volume) {
         return sellProxy(cNames, priceLimit, volume);
     }
 
@@ -35,12 +46,12 @@ public class Alg1Thread extends Thread {
         return getLastMIProxy(cNames);
     }
 
-    boolean buyProxy(CNames cNames, Float priceLimit, Float volume) {
+    boolean buyProxy(CNames cNames, Double priceLimit, Double volume) {
         System.out.println("BuyProxy  , " + "priceLimit : " + priceLimit + " cNames : " + cNames + " , code : " + cNames.getCode() + " , volume : " + volume);
         return true;
     }
 
-    boolean sellProxy(CNames cNames, Float priceLimit, Float volume) {
+    boolean sellProxy(CNames cNames, Double priceLimit, Double volume) {
         System.out.println("SellProxy , " + "priceLimit : " + priceLimit + " cNames : " + cNames + " , code : " + cNames.getCode() + " , volume : " + volume);
         return true;
     }
@@ -64,18 +75,20 @@ public class Alg1Thread extends Thread {
         System.out.println("Thread stopped safely at : " + new Date());
     }
 
-    void startAlg1(CNames cNames, Float priceLimit, Float volume, Float deltaPrice) {
+    void startAlg1(CNames cNames, Double priceLimit, Double volume, Double deltaPrice) {
 
         boolean buyCheck = false;
         boolean sellCheck = false;
+        CRecord rec = null;
 
         while (!buyCheck) {
-            MInfo mi = getLastMI(cNames);
-            if (mi.lp() < priceLimit) {
-                buyCheck = buy(cNames, mi.lp(), volume);
+//            MInfo mi = getLastMI(cNames);
+            rec = this.reader.getNext();
+            if (rec != null && rec.getLow() < priceLimit) {
+                buyCheck = buy(cNames, rec.getLow(), volume);
                 if (!buyCheck) {
                     try {
-                        Thread.sleep(6000);
+                        Thread.sleep(10);
                     } catch (InterruptedException e) {
                         System.out.println("Buy Sleep Exception");
                     }
@@ -84,12 +97,13 @@ public class Alg1Thread extends Thread {
         }
 
         while (!sellCheck) {
-            MInfo mi = getLastMI(cNames);
-            if (mi.hp() > (priceLimit + deltaPrice)) {
-                sellCheck = sell(cNames, mi.hp(), volume);
+//            MInfo mi = getLastMI(cNames);
+            rec = this.reader.getNext();
+            if (rec != null && rec.getHigh() > (priceLimit + deltaPrice)) {
+                sellCheck = sell(cNames, rec.getHigh(), volume);
                 if (!sellCheck) {
                     try {
-                        Thread.sleep(6000);
+                        Thread.sleep(10);
                     } catch (InterruptedException e) {
                         System.out.println("Sell Sleep Exception");
                     }

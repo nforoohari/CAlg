@@ -1,6 +1,6 @@
 package Algs;
 
-public class BTCRecord {
+public class CRecord {
     private final String date;
     private final double open;
     private final double high;
@@ -8,7 +8,7 @@ public class BTCRecord {
     private final double close;
     private final double volume;
 
-    public BTCRecord(String date, double open, double high, double low, double close, double volume) {
+    public CRecord(String date, double open, double high, double low, double close, double volume) {
         this.date = date;
         this.open = open;
         this.high = high;
