@@ -1,8 +1,8 @@
-package Algs;
+package algs;
 
 public class CRecord {
 
-    private final CNames cNames;
+    private final C c;
     private final String date;
     private final double open;
     private final double high;
@@ -10,8 +10,8 @@ public class CRecord {
     private final double close;
     private final double volume;
 
-    public CRecord(CNames cNames, String date, double open, double high, double low, double close, double volume) {
-        this.cNames = cNames;
+    public CRecord(C c, String date, double open, double high, double low, double close, double volume) {
+        this.c = c;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -20,8 +20,8 @@ public class CRecord {
         this.volume = volume;
     }
 
-    public CNames getcNames() {
-        return cNames;
+    public C getC() {
+        return c;
     }
 
     public String getDate() {
@@ -51,7 +51,7 @@ public class CRecord {
     @Override
     public String toString() {
         return "BTCRecord{" +
-                "name=" + cNames +
+                "name=" + c +
                 "date='" + date + '\'' +
                 ", open=" + open +
                 ", high=" + high +

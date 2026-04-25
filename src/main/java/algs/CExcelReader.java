@@ -1,4 +1,4 @@
-package Algs;
+package algs;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -7,13 +7,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class CExcelReader {
-    private final CNames cNames;
+    private final C c;
     private final Workbook workbook;
     private final Sheet sheet;
     private int currentRow = 1;   // رد شدن از ردیف header
 
-    public CExcelReader(CNames cNames, String filePath) throws IOException {
-        this.cNames = cNames;
+    public CExcelReader(C c, String filePath) throws IOException {
+        this.c = c;
         FileInputStream fis = new FileInputStream(filePath);
         this.workbook = new XSSFWorkbook(fis);
         this.sheet = workbook.getSheetAt(0);
@@ -38,7 +38,7 @@ public class CExcelReader {
         double close = row.getCell(4).getNumericCellValue();
         double volume = row.getCell(5).getNumericCellValue();
 
-        return new CRecord(cNames, date, open, high, low, close, volume);
+        return new CRecord(c, date, open, high, low, close, volume);
     }
 
     public void close() {

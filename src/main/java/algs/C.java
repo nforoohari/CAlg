@@ -1,13 +1,14 @@
-package Algs;
+package algs;
 
-public enum CNames {
-    BBB(1),
-    EEE(2),
-    TTT(3);
+public enum C {
+    BTC(1),
+    ETH(2),
+    TON(3),
+    SAM(4);
 
     private final int code;
 
-    CNames(int code) {
+    C(int code) {
         this.code = code;
     }
 
