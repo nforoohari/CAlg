@@ -5,8 +5,12 @@ public class Main {
 
         System.out.println("Hello Algorithms");
 
-        Alg11Thread t = new Alg11Thread(CNames.EEE, 36000.0, 9.0, 2000.0);
-        t.start();
+        NormalRangeAlg nt = new NormalRangeAlg(CNames.EEE, 36000.0, 9.0, 2.0);
+        AscendingRangeAlg at = new AscendingRangeAlg(CNames.EEE, 36000.0, 9.0, 2.0, 1.0);
+        nt.start();
+        nt.join();
+        System.out.println("\n****************************************************************\n");
+        at.start();
 //        Thread.sleep(1000);
 //        t.stopThread();
 

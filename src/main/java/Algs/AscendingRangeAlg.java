@@ -2,22 +2,28 @@ package Algs;
 
 import java.util.Date;
 
-public class Alg11Thread extends Thread {
+public class AscendingRangeAlg extends Thread {
 
     private final CNames cNames;
-    private final Double priceLimit;
+    private Double priceLimit;
     private Double volume;
-    private final Double deltaPrice;
+    private final Double deltaPercent;
+    private Double deltaPrice;
+    private final Double ascendingPercent;
+    private Double ascendingPrice;
     private volatile boolean running;
     private Double soldAmount;
     private CExcelReader reader;
 
 
-    public Alg11Thread(CNames cNames, Double priceLimit, Double volume, Double deltaPrice) {
+    public AscendingRangeAlg(CNames cNames, Double priceLimit, Double volume, Double deltaPercent, Double ascendingPercent) {
         this.cNames = cNames;
         this.priceLimit = priceLimit;
         this.volume = volume;
-        this.deltaPrice = deltaPrice;
+        this.deltaPercent = deltaPercent;
+        this.deltaPrice = deltaPercent * priceLimit / 100;
+        this.ascendingPercent = ascendingPercent;
+        this.ascendingPrice = ascendingPercent * priceLimit / 100;
         this.running = true;
         this.soldAmount = 0.0;
         try {
@@ -104,6 +110,10 @@ public class Alg11Thread extends Thread {
                 break;
             }
         }
+        this.priceLimit += this.ascendingPrice;
+        this.deltaPrice = this.deltaPercent * this.priceLimit / 100;
+        this.ascendingPrice = this.ascendingPercent * this.priceLimit / 100;
+
     }
 }
 
