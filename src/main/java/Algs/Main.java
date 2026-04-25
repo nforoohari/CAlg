@@ -5,12 +5,19 @@ public class Main {
 
         System.out.println("Hello Algorithms");
 
-        NormalRangeAlg nt = new NormalRangeAlg(CNames.EEE, 36000.0, 9.0, 2.0);
-        AscendingRangeAlg at = new AscendingRangeAlg(CNames.EEE, 36000.0, 9.0, 2.0, 1.0);
+//        NormalRangeAlg nt = new NormalRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0);
+//        AscendingRangeAlg at = new AscendingRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0, 1.0);
+//        DescendingRangeAlg dt = new DescendingRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0, 1.0);
+        RangeAlg nt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0,0.0);
+        RangeAlg at = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0, 1.0);
+        RangeAlg dt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0, -1.0);
         nt.start();
         nt.join();
         System.out.println("\n****************************************************************\n");
         at.start();
+        at.join();
+        System.out.println("\n****************************************************************\n");
+        dt.start();
 //        Thread.sleep(1000);
 //        t.stopThread();
 
