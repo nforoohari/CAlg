@@ -6,26 +6,35 @@ public class RangeAlg extends Thread {
 
     private final CNames cNames;
     private Double priceLimit;
+    private final Double baseVolume;
     private Double volume;
     private final Double deltaPercent;
     private Double deltaPrice;
     private final Double ascendingPercent;
     private Double ascendingPrice;
+    private final Double fee;
     private volatile boolean running;
+    private Double broughtInAmount;
     private Double soldAmount;
+    private Double payedFeeAmount;
     private CExcelReader reader;
 
 
-    public RangeAlg(CNames cNames, Double priceLimit, Double volume, Double deltaPercent, Double ascendingPercent) {
+    public RangeAlg(CNames cNames, Double priceLimit, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
         this.cNames = cNames;
         this.priceLimit = priceLimit;
+        this.baseVolume = volume;
         this.volume = volume;
         this.deltaPercent = deltaPercent;
         this.deltaPrice = deltaPercent * priceLimit / 100;
         this.ascendingPercent = ascendingPercent;
         this.ascendingPrice = ascendingPercent * priceLimit / 100;
+        this.fee = feePercent / 100;
         this.running = true;
+        this.broughtInAmount = 0.0;
         this.soldAmount = 0.0;
+        this.payedFeeAmount = 0.0;
+
         try {
             this.reader = new CExcelReader(this.cNames, "C:\\Users\\n_foroohari\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_dummy_year.xlsx");
             System.out.println("The file was read.");
@@ -66,6 +75,14 @@ public class RangeAlg extends Thread {
         }
 
         System.out.println("Thread stopped safely at : " + new Date());
+        System.out.println("broughtInAmount : " +   (((double) Math.round(broughtInAmount * 10000)) / 100));
+        System.out.println("soldAmount : " + (((double) Math.round(soldAmount * 10000)) / 100));
+        System.out.println("volume : " + (((double) Math.round(volume * 10000)) / 100));
+        System.out.println("payedFeeAmount : " + (((double) Math.round(payedFeeAmount * 10000)) / 100));
+        System.out.println("((soldAmount / broughtInAmount) - 1) * 100  : " + ((double) Math.round(((soldAmount / broughtInAmount) - 1) * 10000)) / 100);
+        System.out.println("((volume / baseVolume) - 1) * 100  : " + ((double) Math.round(((volume / baseVolume) - 1) * 10000)) / 100);
+
+
     }
 
     void startAlg() {
@@ -75,10 +92,14 @@ public class RangeAlg extends Thread {
         CRecord rec = null;
 
         while (!buyCheck) {
-            rec = this.reader.getNext();
+            rec = reader.getNext();
             if (rec != null && rec.getLow() < priceLimit) {
-                volume = soldAmount == 0.0 ? volume : soldAmount / rec.getLow();
+                volume = soldAmount == 0.0 ? volume : soldAmount / (rec.getLow() * (1 + fee));
+                broughtInAmount = soldAmount == 0.0 ? volume * (rec.getLow() * (1 + fee)) : broughtInAmount;
                 buyCheck = buy(rec.getcNames(), rec.getLow(), volume);
+                payedFeeAmount += volume * (rec.getLow() * fee);
+                soldAmount = 0.0;
+
 //                if (!buyCheck) {
 //                    try {
 //                        Thread.sleep(10);
@@ -87,17 +108,19 @@ public class RangeAlg extends Thread {
 //                    }
 //                }
             } else if (rec == null) {
-                this.running = false;
+                running = false;
                 sellCheck = true;
                 break;
             }
         }
 
         while (!sellCheck) {
-            rec = this.reader.getNext();
+            rec = reader.getNext();
             if (rec != null && rec.getHigh() > (priceLimit + deltaPrice)) {
                 sellCheck = sell(rec.getcNames(), rec.getHigh(), volume);
-                soldAmount = volume * rec.getHigh();
+                soldAmount = volume * rec.getHigh() * (1 - fee);
+                payedFeeAmount += volume * (rec.getHigh() * fee);
+                volume = 0.0;
 //                if (!sellCheck) {
 //                    try {
 //                        Thread.sleep(10);
@@ -106,13 +129,13 @@ public class RangeAlg extends Thread {
 //                    }
 //                }
             } else if (rec == null) {
-                this.running = false;
+                running = false;
                 break;
             }
         }
-        this.priceLimit += this.ascendingPrice;
-        this.deltaPrice = this.deltaPercent * this.priceLimit / 100;
-        this.ascendingPrice = this.ascendingPercent * this.priceLimit / 100;
+        priceLimit += ascendingPrice;
+        deltaPrice = deltaPercent * priceLimit / 100;
+        ascendingPrice = ascendingPercent * priceLimit / 100;
 
     }
 }

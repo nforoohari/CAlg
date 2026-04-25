@@ -8,9 +8,9 @@ public class Main {
 //        NormalRangeAlg nt = new NormalRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0);
 //        AscendingRangeAlg at = new AscendingRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0, 1.0);
 //        DescendingRangeAlg dt = new DescendingRangeAlg(CNames.EEE, 36000.0, 10.0, 3.0, 1.0);
-        RangeAlg nt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0,0.0);
-        RangeAlg at = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0, 1.0);
-        RangeAlg dt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 2.0, -1.0);
+        RangeAlg nt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 5.0,0.0,0.5);
+        RangeAlg at = new RangeAlg(CNames.EEE, 36000.0, 10.0, 5.0, 1.0,0.5);
+        RangeAlg dt = new RangeAlg(CNames.EEE, 36000.0, 10.0, 5.0, -1.0,0.5);
         nt.start();
         nt.join();
         System.out.println("\n****************************************************************\n");
