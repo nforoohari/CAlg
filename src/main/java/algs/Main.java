@@ -5,9 +5,12 @@ public class Main {
 
         System.out.println("Hello Algorithms");
 
-        RangeAlg nt = new RangeAlg(C.SAM, 36000.0, 10.0, 4.0,0.0,0.5);
-        RangeAlg at = new RangeAlg(C.SAM, 36000.0, 10.0, 4.0, 1.0,0.5);
-        RangeAlg dt = new RangeAlg(C.SAM, 36000.0, 10.0, 4.0, -1.0,0.5);
+//        RangeAlg nt = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  0.0,0.5);
+//        RangeAlg at = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  1.0,0.5);
+//        RangeAlg dt = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0, -1.0,0.5);
+        FloorAlg nt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  0.0,0.5);
+        FloorAlg at = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  1.0,0.5);
+        FloorAlg dt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0, -1.0,0.5);
         nt.start();
         nt.join();
         System.out.println("\n****************************************************************\n");

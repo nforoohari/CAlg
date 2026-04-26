@@ -2,7 +2,7 @@ package algs;
 
 import java.util.Date;
 
-public class RangeAlg extends Thread {
+public class FloorAlg extends Thread {
 
     private final C c;
     private Double limitedPrice;
@@ -22,7 +22,7 @@ public class RangeAlg extends Thread {
     private CExcelReader reader;
 
 
-    public RangeAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
+    public FloorAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
         this.c = c;
         this.limitedPrice = limitedPrice;
         this.stopLoss = stopLoss;
@@ -76,6 +76,8 @@ public class RangeAlg extends Thread {
         while (running) {
             System.out.println("limitedPrice : " + limitedPrice);
             System.out.println("stopLoss : " + stopLoss);
+            System.out.println("deltaPrice : " + deltaPrice);
+            System.out.println("limitedPrice + deltaPrice : " + (limitedPrice + deltaPrice));
             startAlg();
         }
 
@@ -124,10 +126,12 @@ public class RangeAlg extends Thread {
                     soldAmount = volume * rec.getHigh() * (1 - fee);
                     feeAmount += volume * (rec.getHigh() * fee);
                     volume = 0.0;
-                    limitedPrice += ascendingPrice;
-                    stopLoss += ascendingPrice;
-                    deltaPrice = deltaPercent * limitedPrice / 100;
-                    ascendingPrice = ascendingPercent * limitedPrice / 100;
+//                    limitedPrice += ascendingPrice;
+//                    stopLoss += ascendingPrice;
+//                    deltaPrice = deltaPercent * limitedPrice / 100;
+//                    ascendingPrice = ascendingPercent * limitedPrice / 100;
+//                    deltaPrice += ascendingPrice;
+                    deltaPrice = (deltaPrice + ascendingPrice) > (2 + fee) ? (deltaPrice + ascendingPrice) : deltaPrice;
 
                 } else if (rec.getClose() < stopLoss) {
 
@@ -135,11 +139,11 @@ public class RangeAlg extends Thread {
                     soldAmount = volume * rec.getClose() * (1 - fee);
                     feeAmount += volume * (rec.getClose() * fee);
                     volume = 0.0;
-                    limitedPrice = stopLoss - deltaPrice;
-                    stopLoss = limitedPrice - deltaPrice;
-                    deltaPrice = deltaPercent * limitedPrice / 100;
-                    ascendingPrice = ascendingPercent * limitedPrice / 100;
-//                    running = false;
+//                    limitedPrice = stopLoss - deltaPrice;
+//                    stopLoss = limitedPrice - deltaPrice;
+//                    deltaPrice = deltaPercent * limitedPrice / 100;
+//                    ascendingPrice = ascendingPercent * limitedPrice / 100;
+                    running = false;
 
                 }
             } else {
