@@ -8,9 +8,12 @@ public class Main {
 //        RangeAlg nt = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  0.0,0.5);
 //        RangeAlg at = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  1.0,0.5);
 //        RangeAlg dt = new RangeAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0, -1.0,0.5);
-        FloorAlg nt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  0.0,0.5);
-        FloorAlg at = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0,  1.0,0.5);
-        FloorAlg dt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 2.0, -1.0,0.5);
+//        FloorAlg nt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 5.0,  0.0,0.5);
+//        FloorAlg at = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 5.0,  1.0,0.5);
+//        FloorAlg dt = new FloorAlg(C.SAM, 36000.0, 34200.0,10.0, 5.0, -1.0,0.5);
+        CeilingAlg nt = new CeilingAlg(C.SAM, 44000.0, 47000.0,10.0, 5.0,  0.0,0.5);
+        CeilingAlg at = new CeilingAlg(C.SAM, 44000.0, 47000.0,10.0, 5.0,  1.0,0.5);
+        CeilingAlg dt = new CeilingAlg(C.SAM, 44000.0, 47000.0,10.0, 5.0, -1.0,0.5);
         nt.start();
         nt.join();
         System.out.println("\n****************************************************************\n");

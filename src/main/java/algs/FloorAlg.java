@@ -9,9 +9,9 @@ public class FloorAlg extends Thread {
     private Double stopLoss;
     private final Double baseVolume;
     private Double volume;
-    private final Double deltaPercent;
+    private final Double delta;
     private Double deltaPrice;
-    private final Double ascendingPercent;
+    private final Double ascending;
     private Double ascendingPrice;
     private final Double fee;
     private volatile boolean running;
@@ -28,17 +28,16 @@ public class FloorAlg extends Thread {
         this.stopLoss = stopLoss;
         this.baseVolume = volume;
         this.volume = 0.0;
-        this.deltaPercent = deltaPercent;
-        this.deltaPrice = deltaPercent * limitedPrice / 100;
-        this.ascendingPercent = ascendingPercent;
-        this.ascendingPrice = ascendingPercent * limitedPrice / 100;
+        this.delta = deltaPercent / 100;
+        this.deltaPrice = this.delta * limitedPrice;
+        this.ascending = ascendingPercent / 100;
+        this.ascendingPrice = this.ascending * limitedPrice;
         this.fee = feePercent / 100;
         this.running = true;
         this.broughtInAmount = 0.0;
         this.soldAmount = 0.0;
         this.feeAmount = 0.0;
         this.firstTime = true;
-
         try {
             this.reader = new CExcelReader(this.c, "C:\\Users\\n_foroohari\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_dummy_year.xlsx");
             System.out.println("The file was read.");
@@ -46,7 +45,6 @@ public class FloorAlg extends Thread {
             e.printStackTrace();
         }
     }
-
 
     public void stopThread() {
         running = false;
@@ -72,24 +70,25 @@ public class FloorAlg extends Thread {
 
     @Override
     public void run() {
+
         System.out.println("Thread started at : " + new Date());
+
         while (running) {
             System.out.println("limitedPrice : " + limitedPrice);
             System.out.println("stopLoss : " + stopLoss);
             System.out.println("deltaPrice : " + deltaPrice);
             System.out.println("limitedPrice + deltaPrice : " + (limitedPrice + deltaPrice));
+            System.out.println("ascendingPrice : " + ascendingPrice);
             startAlg();
         }
 
         System.out.println("Thread stopped safely at : " + new Date());
         System.out.println("broughtInAmount : " + (((double) Math.round(broughtInAmount * 100)) / 100));
         System.out.println("soldAmount : " + (((double) Math.round(soldAmount * 100)) / 100));
-//        System.out.println("volume : " + (((double) Math.round(volume * 100)) / 100));
         System.out.println("volume : " + volume);
         System.out.println("payedFeeAmount : " + (((double) Math.round(feeAmount * 100)) / 100));
         System.out.println("((soldAmount / broughtInAmount) - 1) * 100  : " + ((double) Math.round(((soldAmount / broughtInAmount) - 1) * 10000)) / 100);
         System.out.println("((volume / baseVolume) - 1) * 100  : " + ((double) Math.round(((volume / baseVolume) - 1) * 10000)) / 100);
-
 
     }
 
@@ -103,17 +102,21 @@ public class FloorAlg extends Thread {
             rec = reader.getNext();
             if (rec != null) {
                 if (rec.getLow() < limitedPrice) {
+
+                    broughtInAmount = firstTime ? baseVolume * rec.getLow() * (1 + fee) : broughtInAmount;
                     volume = firstTime ? baseVolume : soldAmount / (rec.getLow() * (1 + fee));
-                    broughtInAmount = firstTime ? baseVolume * (rec.getLow() * (1 + fee)) : broughtInAmount;
                     buyCheck = buy(rec.getC(), rec.getLow(), volume);
                     feeAmount += volume * (rec.getLow() * fee);
                     soldAmount = 0.0;
                     firstTime = false;
+
                 }
             } else {
+
                 running = false;
                 sellCheck = true;
                 break;
+
             }
         }
 
@@ -126,8 +129,8 @@ public class FloorAlg extends Thread {
                     soldAmount = volume * rec.getHigh() * (1 - fee);
                     feeAmount += volume * (rec.getHigh() * fee);
                     volume = 0.0;
-                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * (limitedPrice+(deltaPrice + ascendingPrice))) ? (deltaPrice + ascendingPrice) : deltaPrice;
 
+                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * (limitedPrice + (deltaPrice + ascendingPrice))) ? (deltaPrice + ascendingPrice) : deltaPrice;
 
                 } else if (rec.getClose() < stopLoss) {
 
@@ -135,16 +138,17 @@ public class FloorAlg extends Thread {
                     soldAmount = volume * rec.getClose() * (1 - fee);
                     feeAmount += volume * (rec.getClose() * fee);
                     volume = 0.0;
+
                     running = false;
 
                 }
             } else {
+
                 running = false;
                 break;
+
             }
         }
-
-
     }
 }
 
