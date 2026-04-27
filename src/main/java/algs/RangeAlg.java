@@ -102,7 +102,7 @@ public class RangeAlg extends Thread {
             if (rec != null) {
                 if (rec.getLow() < limitedPrice) {
                     volume = firstTime ? baseVolume : soldAmount / (rec.getLow() * (1 + fee));
-                    broughtInAmount = firstTime ? volume * (rec.getLow() * (1 + fee)) : broughtInAmount;
+                    broughtInAmount = firstTime ? baseVolume * (rec.getLow() * (1 + fee)) : broughtInAmount;
                     buyCheck = buy(rec.getC(), rec.getLow(), volume);
                     feeAmount += volume * (rec.getLow() * fee);
                     soldAmount = 0.0;

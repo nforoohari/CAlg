@@ -104,7 +104,7 @@ public class FloorAlg extends Thread {
             if (rec != null) {
                 if (rec.getLow() < limitedPrice) {
                     volume = firstTime ? baseVolume : soldAmount / (rec.getLow() * (1 + fee));
-                    broughtInAmount = firstTime ? volume * (rec.getLow() * (1 + fee)) : broughtInAmount;
+                    broughtInAmount = firstTime ? baseVolume * (rec.getLow() * (1 + fee)) : broughtInAmount;
                     buyCheck = buy(rec.getC(), rec.getLow(), volume);
                     feeAmount += volume * (rec.getLow() * fee);
                     soldAmount = 0.0;
@@ -126,12 +126,8 @@ public class FloorAlg extends Thread {
                     soldAmount = volume * rec.getHigh() * (1 - fee);
                     feeAmount += volume * (rec.getHigh() * fee);
                     volume = 0.0;
-//                    limitedPrice += ascendingPrice;
-//                    stopLoss += ascendingPrice;
-//                    deltaPrice = deltaPercent * limitedPrice / 100;
-//                    ascendingPrice = ascendingPercent * limitedPrice / 100;
-//                    deltaPrice += ascendingPrice;
-                    deltaPrice = (deltaPrice + ascendingPrice) > (2 + fee) ? (deltaPrice + ascendingPrice) : deltaPrice;
+                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * (limitedPrice+(deltaPrice + ascendingPrice))) ? (deltaPrice + ascendingPrice) : deltaPrice;
+
 
                 } else if (rec.getClose() < stopLoss) {
 
@@ -139,10 +135,6 @@ public class FloorAlg extends Thread {
                     soldAmount = volume * rec.getClose() * (1 - fee);
                     feeAmount += volume * (rec.getClose() * fee);
                     volume = 0.0;
-//                    limitedPrice = stopLoss - deltaPrice;
-//                    stopLoss = limitedPrice - deltaPrice;
-//                    deltaPrice = deltaPercent * limitedPrice / 100;
-//                    ascendingPrice = ascendingPercent * limitedPrice / 100;
                     running = false;
 
                 }
