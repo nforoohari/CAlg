@@ -1,4 +1,4 @@
-package algs;
+package service;
 
 import java.util.Date;
 

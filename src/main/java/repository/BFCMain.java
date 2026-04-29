@@ -1,4 +1,4 @@
-package algs;
+package repository;
 
 public class BFCMain {
 

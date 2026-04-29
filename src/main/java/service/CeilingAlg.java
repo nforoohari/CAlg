@@ -1,8 +1,10 @@
-package algs;
+package service;
+
+import repository.CExcelReader;
 
 import java.util.Date;
 
-public class RangeAlg extends Thread {
+public class CeilingAlg extends Thread {
 
     private final C c;
     private Double limitedPrice;
@@ -21,13 +23,12 @@ public class RangeAlg extends Thread {
     private boolean firstTime;
     private CExcelReader reader;
 
-
-    public RangeAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
+    public CeilingAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
         this.c = c;
         this.limitedPrice = limitedPrice;
         this.stopLoss = stopLoss;
         this.baseVolume = volume;
-        this.volume = 0.0;
+        this.volume = volume;
         this.delta = deltaPercent / 100;
         this.deltaPrice = this.delta * limitedPrice;
         this.ascending = ascendingPercent / 100;
@@ -39,7 +40,7 @@ public class RangeAlg extends Thread {
         this.feeAmount = 0.0;
         this.firstTime = true;
         try {
-            this.reader = new CExcelReader(this.c, "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_last_2years.xlsx");
+            this.reader = new CExcelReader(this.c, "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_last_year.xlsx");
             System.out.println("The file was read.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,7 +78,7 @@ public class RangeAlg extends Thread {
             System.out.println("limitedPrice : " + limitedPrice);
             System.out.println("stopLoss : " + stopLoss);
             System.out.println("deltaPrice : " + deltaPrice);
-            System.out.println("limitedPrice + deltaPrice : " + (limitedPrice + deltaPrice));
+            System.out.println("limitedPrice - deltaPrice : " + (limitedPrice - deltaPrice));
             System.out.println("ascendingPrice : " + ascendingPrice);
             startAlg();
         }
@@ -98,54 +99,46 @@ public class RangeAlg extends Thread {
         boolean sellCheck = false;
         CRecord rec = null;
 
-        while (!buyCheck) {
+        while (!sellCheck) {
             rec = reader.getNext();
             if (rec != null) {
-                if (rec.getLow() < limitedPrice) {
+                if (rec.getHigh() > limitedPrice) {
 
-                    broughtInAmount = firstTime ? baseVolume * rec.getLow() * (1 + fee) : broughtInAmount;
-                    volume = firstTime ? baseVolume : soldAmount / (rec.getLow() * (1 + fee));
-                    buyCheck = buy(rec.getC(), rec.getLow(), volume);
-                    feeAmount += volume * (rec.getLow() * fee);
-                    soldAmount = 0.0;
+                    broughtInAmount = firstTime ? baseVolume * rec.getHigh() : broughtInAmount;
+                    sellCheck = sell(rec.getC(), rec.getHigh(), volume);
+                    soldAmount = volume * rec.getHigh() * (1 - fee);
+                    feeAmount += volume * (rec.getHigh() * fee);
+                    volume = 0.0;
                     firstTime = false;
 
                 }
             } else {
 
                 running = false;
-                sellCheck = true;
+                buyCheck = true;
                 break;
 
             }
         }
 
-        while (!sellCheck) {
+        while (!buyCheck) {
             rec = reader.getNext();
             if (rec != null) {
-                if (rec.getHigh() > (limitedPrice + deltaPrice)) {
+                if (rec.getLow() < (limitedPrice - deltaPrice)) {
 
-                    sellCheck = sell(rec.getC(), rec.getHigh(), volume);
-                    soldAmount = volume * rec.getHigh() * (1 - fee);
-                    feeAmount += volume * (rec.getHigh() * fee);
-                    volume = 0.0;
+                    volume = soldAmount / (rec.getLow() * (1 + fee));
+                    buyCheck = buy(rec.getC(), rec.getLow(), volume);
+                    feeAmount += volume * rec.getLow() * fee;
+                    soldAmount = 0.0;
 
-                    limitedPrice += ascendingPrice;
-                    stopLoss += ascendingPrice;
-                    deltaPrice = delta * limitedPrice;
-                    ascendingPrice = ascending * limitedPrice;
+                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * limitedPrice) ? (deltaPrice + ascendingPrice) : deltaPrice;
 
-                } else if (rec.getClose() < stopLoss) {
+                } else if (rec.getClose() > stopLoss) {
 
-                    sellCheck = sell(rec.getC(), rec.getClose(), volume);
-                    soldAmount = volume * rec.getClose() * (1 - fee);
+                    volume = soldAmount / (rec.getClose() * (1 + fee));
+                    buyCheck = buy(rec.getC(), rec.getClose(), volume);
                     feeAmount += volume * (rec.getClose() * fee);
-                    volume = 0.0;
-
-                    limitedPrice = stopLoss - deltaPrice;
-                    stopLoss = limitedPrice - deltaPrice;
-                    deltaPrice = delta * limitedPrice;
-                    ascendingPrice = ascending * limitedPrice;
+                    soldAmount = 0.0;
 
                     running = false;
 

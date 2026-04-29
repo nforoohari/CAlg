@@ -1,4 +1,4 @@
-package algs;
+package repository;
 public class BFCRecord {
 
     private final String date;

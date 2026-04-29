@@ -1,4 +1,4 @@
-package algs;
+package service;
 
 public enum C {
     BTC(1),
