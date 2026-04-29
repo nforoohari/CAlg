@@ -20,7 +20,7 @@ public class BFCRecord {
 
     @Override
     public String toString() {
-        return "BTCRecord{" +
+        return "BFCRecord{" +
                 "date='" + date + '\'' +
                 ", open=" + open +
                 ", high=" + high +

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 # --- تنظیم بازهٔ زمانی: یک سال اخیر ---
 end_date = datetime.utcnow()
-start_date = end_date - timedelta(days=365)
+start_date = end_date - timedelta(days=730)
 
 # تبدیل تاریخ‌ها به میلی‌ثانیه برای API
 start_ms = int(start_date.timestamp() * 1000)
@@ -14,8 +14,8 @@ end_ms = int(end_date.timestamp() * 1000)
 url = "https://api.binance.com/api/v3/klines"
 
 params = {
-    "symbol": "BTCUSDT",
-    "interval": "1d",
+    "symbol": "ETHUSDT",
+    "interval": "1s",
     "startTime": start_ms,
     "endTime": end_ms,
     "limit": 1000        # حداکثر
@@ -43,7 +43,7 @@ df["date"] = pd.to_datetime(df["open_time"], unit='ms')
 df = df[["date", "open", "high", "low", "close", "volume"]]
 
 # ذخیره در اکسل
-output_file = "btc_usdt_last_year.xlsx"
+output_file = "eth_usdt_last_2years_seconds.xlsx"
 df.to_excel(output_file, index=False)
 
 print("فایل با موفقیت ساخته شد:", output_file)
