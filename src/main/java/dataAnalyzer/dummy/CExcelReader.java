@@ -1,13 +1,10 @@
-package repository;
+package dataAnalyzer.dummy;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import service.C;
-import service.CRecord;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Date;
 
 public class CExcelReader {
     private final C c;
@@ -34,19 +31,15 @@ public class CExcelReader {
             return getNext(); // ردیف خالی → رد شو
         }
 
-//        String date = row.getCell(0).getStringCellValue();
-        Date date = row.getCell(0).getDateCellValue();
-//        double open = row.getCell(1).getNumericCellValue();
-//        double high = row.getCell(2).getNumericCellValue();
-//        double low = row.getCell(3).getNumericCellValue();
-//        double close = row.getCell(4).getNumericCellValue();
-//        double volume = row.getCell(5).getNumericCellValue();
-        double open = Double.parseDouble(row.getCell(1).getStringCellValue());
-        double high = Double.parseDouble(row.getCell(2).getStringCellValue());
-        double low = Double.parseDouble(row.getCell(3).getStringCellValue());
-        double close = Double.parseDouble(row.getCell(4).getStringCellValue());
-        double volume = Double.parseDouble(row.getCell(5).getStringCellValue());
+        String date = row.getCell(0).getStringCellValue();
+        double open = row.getCell(1).getNumericCellValue();
+        double high = row.getCell(2).getNumericCellValue();
+        double low = row.getCell(3).getNumericCellValue();
+        double close = row.getCell(4).getNumericCellValue();
+        double volume = row.getCell(5).getNumericCellValue();
+
         return new CRecord(c, date, open, high, low, close, volume);
+
     }
 
     public void close() {

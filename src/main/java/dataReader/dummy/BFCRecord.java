@@ -1,4 +1,5 @@
-package repository;
+package dataReader.dummy;
+
 public class BFCRecord {
 
     private final String date;

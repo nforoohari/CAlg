@@ -1,4 +1,4 @@
-package repository;
+package dataReceiver;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -112,3 +112,18 @@ public class BinanceDataReceiver {
         System.out.println("فایل با موفقیت ساخته شد: " + output);
     }
 }
+
+
+//        String date = row.getCell(0).getStringCellValue();
+////        Date date = row.getCell(0).getDateCellValue();
+//        double open = row.getCell(1).getNumericCellValue();
+//        double high = row.getCell(2).getNumericCellValue();
+//        double low = row.getCell(3).getNumericCellValue();
+//        double close = row.getCell(4).getNumericCellValue();
+//        double volume = row.getCell(5).getNumericCellValue();
+////        double open = Double.parseDouble(row.getCell(1).getStringCellValue());
+////        double high = Double.parseDouble(row.getCell(2).getStringCellValue());
+////        double low = Double.parseDouble(row.getCell(3).getStringCellValue());
+////        double close = Double.parseDouble(row.getCell(4).getStringCellValue());
+////        double volume = Double.parseDouble(row.getCell(5).getStringCellValue());
+//        return new dataAnalyzer.python.CRecord(c, date, open, high, low, close, volume);

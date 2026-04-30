@@ -1,6 +1,4 @@
-package service;
-
-import repository.CExcelReader;
+package dataAnalyzer.dummy;
 
 import java.util.Date;
 
@@ -41,7 +39,7 @@ public class FloorAlg extends Thread {
         this.feeAmount = 0.0;
         this.firstTime = true;
         try {
-            this.reader = new CExcelReader(this.c, "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\btc_usdt_last_year.xlsx");
+            this.reader = new CExcelReader(this.c, "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\dummy\\btc_usdt_dummy_year.xlsx");
             System.out.println("The file was read.");
         } catch (Exception e) {
             e.printStackTrace();

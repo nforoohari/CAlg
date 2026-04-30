@@ -1,4 +1,4 @@
-package controller;
+package dataPresenter;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

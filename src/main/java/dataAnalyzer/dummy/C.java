@@ -1,4 +1,4 @@
-package service;
+package dataAnalyzer.dummy;
 
 public enum C {
     BTC(1),

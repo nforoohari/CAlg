@@ -1,6 +1,6 @@
 package repository;
 
-import controller.Candle;
+import dataPresenter.Candle;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

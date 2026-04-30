@@ -1,4 +1,4 @@
-package controller;
+package dataPresenter;
 
 public class Candle {
 
