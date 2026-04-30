@@ -1,7 +1,6 @@
-package repository;
+package dataInserter;
 
 import org.json.JSONArray;
-import repository.DB;
 
 import java.net.URI;
 import java.net.http.HttpClient;

@@ -1,6 +1,6 @@
 package dataPresenter;
 
-import repository.CandleRepository;
+import dataInserter.CandleRepository;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

@@ -1,0 +1,51 @@
+package dataAnalyzer.python;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Date;
+
+public class CExcelReader {
+    private final C c;
+    private final Workbook workbook;
+    private final Sheet sheet;
+    private int currentRow = 1;   // رد شدن از ردیف header
+
+    public CExcelReader(C c, String filePath) throws IOException {
+        this.c = c;
+        FileInputStream fis = new FileInputStream(filePath);
+        this.workbook = new XSSFWorkbook(fis);
+        this.sheet = workbook.getSheetAt(0);
+
+    }
+
+    public CRecord getNext() {
+        if (currentRow > sheet.getLastRowNum()) {
+            close();
+            return null;    // تمام شد
+        }
+
+        Row row = sheet.getRow(currentRow++);
+        if (row == null) {
+            return getNext(); // ردیف خالی → رد شو
+        }
+
+        Date date = row.getCell(0).getDateCellValue();
+        double open = Double.parseDouble(row.getCell(1).getStringCellValue());
+        double high = Double.parseDouble(row.getCell(2).getStringCellValue());
+        double low = Double.parseDouble(row.getCell(3).getStringCellValue());
+        double close = Double.parseDouble(row.getCell(4).getStringCellValue());
+        double volume = Double.parseDouble(row.getCell(5).getStringCellValue());
+        return new CRecord(c, date, open, high, low, close, volume);
+    }
+
+    public void close() {
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}

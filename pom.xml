@@ -22,6 +22,7 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -37,6 +38,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -62,11 +64,6 @@
             <artifactId>jfreechart</artifactId>
             <version>1.5.4</version>
         </dependency>
-
     </dependencies>
-
-
-
-
 
 </project>

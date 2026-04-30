@@ -1,4 +1,4 @@
-package repository;
+package dataInserter;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
