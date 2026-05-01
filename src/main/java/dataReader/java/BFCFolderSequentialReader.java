@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -52,7 +53,7 @@ public class BFCFolderSequentialReader {
         }
     }
 
-    public BFCRecord next() throws IOException {
+    public BFCRecord next() throws IOException, ParseException {
 
         if (currentReader == null) return null;
 

@@ -1,15 +1,17 @@
 package dataReader.java;
 
+import java.util.Date;
+
 public class BFCRecord {
 
-    private final String date;
+    private final Date date;
     private final double open;
     private final double high;
     private final double low;
     private final double close;
     private final double volume;
 
-    public BFCRecord(String date, double open, double high,
+    public BFCRecord(Date date, double open, double high,
                      double low, double close, double volume) {
         this.date = date;
         this.open = open;

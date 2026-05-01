@@ -5,14 +5,14 @@ import java.util.Date;
 public class CRecord {
 
     private final C c;
-    private final String date;
+    private final Date date;
     private final double open;
     private final double high;
     private final double low;
     private final double close;
     private final double volume;
 
-    public CRecord(C c, String date, double open, double high, double low, double close, double volume) {
+    public CRecord(C c, Date date, double open, double high, double low, double close, double volume) {
         this.c = c;
         this.date = date;
         this.open = open;
@@ -26,7 +26,7 @@ public class CRecord {
         return c;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 

@@ -14,9 +14,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
+import java.time.format.DateTimeFormatter;
+
 public class BinanceDataReceiver {
 
     public static void main(String[] args) throws Exception {
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // --- تنظیم بازه زمانی دو سال اخیر ---
         LocalDateTime endDate = LocalDateTime.now(ZoneOffset.UTC);
@@ -87,7 +92,8 @@ public class BinanceDataReceiver {
 
             Row row = sheet.createRow(rowIndex++);
 
-            row.createCell(0).setCellValue(date.toString());
+//            row.createCell(0).setCellValue(date.toString());
+            row.createCell(0).setCellValue(date.format(formatter));
             row.createCell(1).setCellValue(open);
             row.createCell(2).setCellValue(high);
             row.createCell(3).setCellValue(low);
