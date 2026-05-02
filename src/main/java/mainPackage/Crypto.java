@@ -5,13 +5,13 @@ public enum Crypto {
     Ethereum(2,"ETH"),
     Toncoin(3,"TON"),
     Solana(4,"SOL"),
-    Chainlink(5,"Link"),
+    Chainlink(5,"LINK"),
     Cardano(6,"ADA"),
     PAXG(7,"PAXG"),
     SAM(1000,"SAM");
 
 
-    private final int code;
+    private final long code;
 
     private final String name;
 
@@ -20,7 +20,7 @@ public enum Crypto {
         this.name = name;
     }
 
-    public int getCode() {
+    public long getCode() {
         return code;
     }
 

@@ -5,7 +5,7 @@ import java.text.ParseException;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, ParseException, InterruptedException {
+    public static void main(String[] args) throws Exception {
 
         //Gathering
 
@@ -52,16 +52,19 @@ public class Main {
         paxg.gather("1s", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
 
         //Reading
-
         ExcelFolderReader reader =
-                new ExcelFolderReader(Crypto.Bitcoin,"C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main");
+                new ExcelFolderReader(Crypto.Bitcoin,"1d","C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main");
+
         CryptoRecord record;
+        DBInserter db = new DBInserter("crypto_day");
 
         while ((record = reader.next()) != null) {
+            db.batchAddAndInsert(record);
             System.out.println(record);
         }
-        System.out.println("✅ All files processed.");
+        db.batchAddAndInsert(record);
 
+        System.out.println("✅ All files processed.");
 
     }
 }

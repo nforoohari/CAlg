@@ -1,6 +1,4 @@
-package dataInserter;
-
-import dataPresenter.Candle;
+package dataPresenter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

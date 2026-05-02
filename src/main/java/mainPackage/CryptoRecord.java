@@ -34,6 +34,34 @@ public class CryptoRecord {
         this.volume = volume;
     }
 
+    public Crypto getCrypto() {
+        return crypto;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public double getOpen() {
+        return open;
+    }
+
+    public double getHigh() {
+        return high;
+    }
+
+    public double getLow() {
+        return low;
+    }
+
+    public double getClose() {
+        return close;
+    }
+
+    public double getVolume() {
+        return volume;
+    }
+
     public void setCrypto(Crypto crypto) {
         this.crypto = crypto;
     }

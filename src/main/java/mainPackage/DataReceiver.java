@@ -12,11 +12,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.DateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 public class DataReceiver {
 
@@ -24,6 +25,9 @@ public class DataReceiver {
 
     private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private final DateTimeFormatter fileFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 
     // --- آدرس API ---
     private final String url = "https://api.binance.com/api/v3/klines";
@@ -34,13 +38,7 @@ public class DataReceiver {
         this.crypto = crypto;
     }
 
-    public void receive(String interval, String startTime, String endTime) throws IOException, InterruptedException {
-
-        LocalDateTime startDate = LocalDateTime.parse(startTime, formatter);
-        LocalDateTime endDate = LocalDateTime.parse(endTime, formatter);
-
-        long startMs = startDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-        long endMs = endDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+    public void receive(String interval, long startMs , long endMs) throws IOException, InterruptedException {
 
         String fullUrl = url +
                 "?symbol=" + crypto.getName() + "USDT" +
@@ -115,9 +113,14 @@ public class DataReceiver {
             sheet.autoSizeColumn(i);
         }
 
-        // خروجی Excel
+
+        LocalDateTime fileDate =
+                Instant.ofEpochMilli(startMs)
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDateTime();
+
 //        String output = "eth_usdt_last_2years_seconds_utc.xlsx";
-        String output = crypto.getName() + " " + startTime + " " + interval + ".xlsx";
+        String output = crypto.getName() + " " + fileDate.format(fileFormatter) + " " + interval + ".xlsx";
 
         try (FileOutputStream out = new FileOutputStream(path + output)) {
             workbook.write(out);
@@ -131,7 +134,5 @@ public class DataReceiver {
 
     public static void main(String[] args) throws Exception {
 
-        DataReceiver dr = new DataReceiver(Crypto.Ethereum);
-        dr.receive("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
     }
 }
