@@ -27,5 +27,14 @@ public enum Crypto {
     public String getName() {
         return name;
     }
+
+    public static mainPackage.Crypto fromCode(long code) {
+        for (mainPackage.Crypto c : mainPackage.Crypto.values()) {
+            if (c.getCode() == code) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException("Invalid code: " + code);
+    }
 }
 

@@ -1,12 +1,10 @@
 package api;
 
-import mainPackage.Crypto;
-
 import java.util.Date;
 
 public class CryptoRecord {
 
-    private mainPackage.Crypto crypto;
+    private Crypto crypto;
     private final Date date;
     private final double open;
     private final double high;
@@ -14,7 +12,7 @@ public class CryptoRecord {
     private final double close;
     private final double volume;
 
-    public CryptoRecord(mainPackage.Crypto crypto, Date date, double open, double high,
+    public CryptoRecord(Crypto crypto, Date date, double open, double high,
                         double low, double close, double volume) {
         this.crypto = crypto;
         this.date = date;
@@ -27,7 +25,7 @@ public class CryptoRecord {
 
     public CryptoRecord(Date date, double open, double high,
                         double low, double close, double volume) {
-        this.crypto = mainPackage.Crypto.SAM;
+        this.crypto = Crypto.SAM;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -36,7 +34,7 @@ public class CryptoRecord {
         this.volume = volume;
     }
 
-    public mainPackage.Crypto getCrypto() {
+    public Crypto getCrypto() {
         return crypto;
     }
 
