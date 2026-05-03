@@ -1,4 +1,4 @@
-package dataPresenter;
+package mainPackage;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CandleChart {
 
-    public static void show(List<Candle> candles){
+    public static void show(List<CryptoRecord> candles) {
 
         int n = candles.size();
 
@@ -22,21 +22,23 @@ public class CandleChart {
         double[] close = new double[n];
         double[] volume = new double[n];
 
-        for(int i=0;i<n;i++){
+        for (int i = 0; i < n; i++) {
 
-            Candle c = candles.get(i);
+            CryptoRecord c = candles.get(i);
 
-            date[i] = new Date(c.time);
-            high[i] = c.high;
-            low[i] = c.low;
-            open[i] = c.open;
-            close[i] = c.close;
-            volume[i] = c.volume;
+            date[i] = c.getDate();
+            high[i] = c.getHigh();
+            low[i] = c.getLow();
+            open[i] = c.getOpen();
+            close[i] = c.getClose();
+            volume[i] = c.getVolume();
         }
+
+        String cn = candles.get(0).getCrypto().getName();
 
         DefaultHighLowDataset dataset =
                 new DefaultHighLowDataset(
-                        "ETHUSDT",
+                        cn + "USDT",
                         date,
                         high,
                         low,
@@ -47,7 +49,7 @@ public class CandleChart {
 
         JFreeChart chart =
                 ChartFactory.createCandlestickChart(
-                        "ETH/USDT",
+                        cn + "/USDT",
                         "Time",
                         "Price",
                         dataset,
@@ -58,7 +60,8 @@ public class CandleChart {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new ChartPanel(chart));
-        frame.setSize(1000,600);
+        frame.setSize(1000, 600);
         frame.setVisible(true);
     }
+
 }

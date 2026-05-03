@@ -1,4 +1,4 @@
-package mainPackage;
+package api;
 
 public enum Crypto {
     Bitcoin(1,"BTC"),
@@ -26,15 +26,6 @@ public enum Crypto {
 
     public String getName() {
         return name;
-    }
-
-    public static Crypto fromCode(long code) {
-        for (Crypto c : Crypto.values()) {
-            if (c.getCode() == code) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException("Invalid code: " + code);
     }
 }
 

@@ -1,7 +1,6 @@
 package mainPackage;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.util.List;
 
 public class Main {
 
@@ -65,6 +64,13 @@ public class Main {
         db.batchAddAndInsert(record);
 
         System.out.println("✅ All files processed.");
+
+        //Showing
+
+        List<CryptoRecord> candles =
+                DBLoader.load("crypto_day",Crypto.Bitcoin,"2025-01-01 00:00:00","2025-02-01 00:00:00");
+        CandleChart.show(candles);
+
 
     }
 }

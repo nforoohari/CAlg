@@ -5,7 +5,7 @@ USE crypto;
 CREATE TABLE crypto_day (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
                              crypto BIGINT,
-                             date BIGINT,
+                             interval_date BIGINT,
                              open DOUBLE,
                              high DOUBLE,
                              low DOUBLE,

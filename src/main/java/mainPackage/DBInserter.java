@@ -16,7 +16,7 @@ public class DBInserter {
     public DBInserter(String tableName) throws Exception {
         this.tableName = tableName;
         this.conn = DB.getConnection();
-        this.sql = "INSERT INTO " + this.tableName + "(crypto,date,open,high,low,close,volume) VALUES (?,?,?,?,?,?,?)";
+        this.sql = "INSERT INTO " + this.tableName + "(crypto,interval_date,open,high,low,close,volume) VALUES (?,?,?,?,?,?,?)";
         this.ps = conn.prepareStatement(sql);
         this.counter = 0;
     }
