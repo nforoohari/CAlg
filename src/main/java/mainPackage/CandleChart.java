@@ -35,6 +35,7 @@ public class CandleChart {
         }
 
         String cn = candles.get(0).getCrypto().getName();
+//        System.out.println(candles.size());
 
         DefaultHighLowDataset dataset =
                 new DefaultHighLowDataset(

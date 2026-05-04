@@ -2,7 +2,7 @@ CREATE DATABASE crypto;
 
 USE crypto;
 
-CREATE TABLE crypto_days (
+CREATE TABLE crypto_day (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
                              crypto BIGINT,
                              interval_date datetime,

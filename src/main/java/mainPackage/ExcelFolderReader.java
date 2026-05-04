@@ -46,7 +46,8 @@ public class ExcelFolderReader {
         String fileName = path.getFileName().toString()
                 .replace(".xlsx", "")
                 .replace(this.crypto.getName(), "")
-                .replace(this.interval, "");
+                .replace(this.interval, "")
+                .trim();
         return LocalDateTime.parse(fileName, FORMATTER);
     }
 

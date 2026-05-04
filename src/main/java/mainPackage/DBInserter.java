@@ -26,7 +26,6 @@ public class DBInserter {
         if (counter < 1000 && cryptoRecord != null) {
 
             ps.setLong(1, cryptoRecord.getCrypto().getCode());
-//            ps.setDate(2, Date.valueOf(cryptoRecord.getDate().toString()));
             ps.setTimestamp(2, new java.sql.Timestamp(cryptoRecord.getDate().getTime()));
             ps.setDouble(3, cryptoRecord.getOpen());
             ps.setDouble(4, cryptoRecord.getHigh());

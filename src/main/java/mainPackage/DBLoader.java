@@ -35,8 +35,8 @@ public class DBLoader {
 
         PreparedStatement ps = conn.prepareStatement(sql);
 
-        ps.setLong(1, startMs);
-        ps.setLong(2, endMs);
+        ps.setTimestamp(1, new java.sql.Timestamp(startMs));
+        ps.setTimestamp(2, new java.sql.Timestamp(endMs));
 
         ResultSet rs = ps.executeQuery();
 
@@ -46,7 +46,7 @@ public class DBLoader {
 
             list.add(new CryptoRecord(
                     Crypto.fromCode(rs.getLong("crypto")),
-                    rs.getDate("interval_date"),
+                    rs.getTimestamp("interval_date"),
                     rs.getDouble("open"),
                     rs.getDouble("high"),
                     rs.getDouble("low"),

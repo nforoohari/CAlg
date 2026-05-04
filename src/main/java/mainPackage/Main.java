@@ -51,26 +51,26 @@ public class Main {
 //        paxg.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
 //        //Reading
-        ExcelFolderReader reader =
-                new ExcelFolderReader(Crypto.Bitcoin,"1d","C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main");
-
-        CryptoRecord record;
-        DBInserter db = new DBInserter("crypto_day");
-
-        while ((record = reader.next()) != null) {
-            db.batchAddAndInsert(record);
-            System.out.println(record);
-        }
-        db.batchAddAndInsert(record);
-
-        System.out.println("✅ All files processed.");
+//        ExcelFolderReader reader =
+//                new ExcelFolderReader(Crypto.Bitcoin,"1s","C:\\Users\\n_foroohari\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main");
+//
+//        CryptoRecord record;
+//        DBInserter db = new DBInserter("crypto_second");
+//
+//        while ((record = reader.next()) != null) {
+//            db.batchAddAndInsert(record);
+//            System.out.println(record);
+//        }
+//        db.batchAddAndInsert(record);
+//
+//        System.out.println("✅ All files processed.");
 //
 //        //Showing
 //
-//        List<CryptoRecord> candles =
-//                DBLoader.load("crypto_day",Crypto.Bitcoin,"2025-01-01 00:00:00","2025-02-01 00:00:00");
+        List<CryptoRecord> candles =
+                DBLoader.load("crypto_hour",Crypto.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
+        TradingViewChartOffline.show(candles);
 //        CandleChart.show(candles);
-
 
     }
 }
