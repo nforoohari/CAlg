@@ -27,11 +27,12 @@ public class ExcelFolderReader {
         this.interval=  interval;
 
         // گرفتن همه فایل‌های excel
-        List<Path> files = Files.list(Paths.get(folderPath))
+//        List<Path> files = Files.list(Paths.get(folderPath))
+        List<Path> files = Files.list(Path.of(folderPath))
                 .filter(p -> p.toString().endsWith(".xlsx"))
-                .filter(p -> p.toString().startsWith(this.crypto.getName()))
+                .filter(p -> p.toString().contains(this.crypto.getName()))//this.crypto.getName()
                 .filter(p -> p.toString().contains(this.interval))
-                .collect(Collectors.toList());
+                .toList();
 
         // مرتب‌سازی بر اساس نام فایل (که تاریخ است)
         this.sortedFiles = files.stream()
