@@ -2,12 +2,12 @@ package api;
 
 public class Trader {
 
-    private APIInterface apiInterface;
+    private NetInterface netInterface;
     private AlgInterface algInterface;
 
-    public Trader(AlgInterface algInterface, APIInterface apiInterface) {
+    public Trader(AlgInterface algInterface, NetInterface netInterface) {
 
-        this.apiInterface = apiInterface;
+        this.netInterface = netInterface;
         this.algInterface = algInterface;
 
     }

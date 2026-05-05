@@ -8,7 +8,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
-public class MainnetAPI implements APIInterface{
+public class MainNet implements NetInterface {
 
     private static final String API_KEY = "YOUR_API_KEY";
     private static final String SECRET_KEY = "YOUR_SECRET_KEY";
@@ -117,12 +117,13 @@ public class MainnetAPI implements APIInterface{
     }
 
     @Override
-    public CryptoRecord getMinuteInfo(Crypto crypto) {
+    public CryptoRecord getMarketInfo(Crypto crypto, String interval) {
         return null;
     }
 
     @Override
-    public CryptoRecord getSecondInfo(Crypto crypto) {
+    public OrderStatus checkOrderStatus(Crypto crypto, long orderId) {
         return null;
     }
+
 }

@@ -30,6 +30,26 @@ public class FloorAlg implements AlgInterface {
     public void initialize() {
 
     }
+
+    @Override
+    public void setNet(NetInterface netInterface) {
+
+    }
+
+    @Override
+    public NetInterface getNet() {
+        return null;
+    }
+
+    @Override
+    public void setAlgPrameters(AlgParameters algParameters) {
+
+    }
+
+    @Override
+    public AlgParameters getAlgPrameters() {
+        return null;
+    }
 }
 
 

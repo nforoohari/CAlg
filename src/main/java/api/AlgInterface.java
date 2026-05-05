@@ -8,4 +8,8 @@ public interface AlgInterface {
     void resume();
     void setParameters();
     void initialize();
+    void setNet(NetInterface netInterface);
+    NetInterface getNet();
+    void setAlgPrameters(AlgParameters algParameters);
+    AlgParameters getAlgPrameters();
 }

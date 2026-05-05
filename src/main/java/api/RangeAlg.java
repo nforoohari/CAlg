@@ -1,6 +1,14 @@
 package api;
 
 public class RangeAlg implements AlgInterface {
+
+    private NetInterface netInterface;
+    private AlgParameters algParameters;
+
+    public RangeAlg(NetInterface netInterface) {
+        this.netInterface = netInterface;
+    }
+
     @Override
     public void start() {
 
@@ -30,6 +38,28 @@ public class RangeAlg implements AlgInterface {
     public void initialize() {
 
     }
+
+    @Override
+    public void setNet(NetInterface netInterface) {
+        this.netInterface = netInterface;
+    }
+
+    @Override
+    public NetInterface getNet() {
+        return this.netInterface;
+    }
+
+    @Override
+    public void setAlgPrameters(AlgParameters algParameters) {
+        this.algParameters = algParameters;
+    }
+
+    @Override
+    public AlgParameters getAlgPrameters() {
+        return algParameters;
+    }
+
+
 }
 
 

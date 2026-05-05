@@ -1,4 +1,5 @@
 package api;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -7,11 +8,32 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class TestnetAPI implements APIInterface{
+public class TestNet implements NetInterface {
 
     private static final String API_KEY = "YOUR_API_KEY";
     private static final String SECRET_KEY = "YOUR_SECRET_KEY";
     private static final String BASE_URL = "https://testnet.binance.vision";
+
+    @Override
+    public Double buy(Crypto crypto, Double price, Double volume) {
+        return null;
+    }
+
+    @Override
+    public Double sell(Crypto crypto, Double price, Double volume) {
+        return null;
+    }
+
+    @Override
+    public CryptoRecord getMarketInfo(Crypto crypto, String interval) {
+        return null;
+    }
+
+    @Override
+    public OrderStatus checkOrderStatus(Crypto crypto, long orderId) {
+        return null;
+    }
+
 
     public static void main(String[] args) throws Exception {
 
@@ -81,6 +103,7 @@ public class TestnetAPI implements APIInterface{
         }
         return hex.toString();
     }
+
     public static void getOrderStatus(String symbol, long orderId) throws Exception {
 
         long timestamp = System.currentTimeMillis();
@@ -105,23 +128,4 @@ public class TestnetAPI implements APIInterface{
         System.out.println("Order Status: " + response.body());
     }
 
-    @Override
-    public Double buy(Crypto crypto, Double price, Double volume) {
-        return null;
-    }
-
-    @Override
-    public Double sell(Crypto crypto, Double price, Double volume) {
-        return null;
-    }
-
-    @Override
-    public CryptoRecord getMinuteInfo(Crypto crypto) {
-        return null;
-    }
-
-    @Override
-    public CryptoRecord getSecondInfo(Crypto crypto) {
-        return null;
-    }
 }

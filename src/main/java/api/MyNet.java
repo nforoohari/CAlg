@@ -1,6 +1,6 @@
 package api;
 
-public class MynetAPI implements APIInterface {
+public class MyNet implements NetInterface {
     @Override
     public Double buy(Crypto crypto, Double price, Double volume) {
         return null;
@@ -12,12 +12,13 @@ public class MynetAPI implements APIInterface {
     }
 
     @Override
-    public CryptoRecord getMinuteInfo(Crypto crypto) {
+    public CryptoRecord getMarketInfo(Crypto crypto, String interval) {
         return null;
     }
 
     @Override
-    public CryptoRecord getSecondInfo(Crypto crypto) {
+    public OrderStatus checkOrderStatus(Crypto crypto, long orderId) {
         return null;
     }
+
 }
