@@ -82,6 +82,29 @@ public class MainnetAPI implements APIInterface{
         }
         return hex.toString();
     }
+    public static void getOrderStatus(String symbol, long orderId) throws Exception {
+
+        long timestamp = System.currentTimeMillis();
+
+        String query = "symbol=" + symbol +
+                "&orderId=" + orderId +
+                "&timestamp=" + timestamp;
+
+        String signature = hmacSHA256(query, SECRET_KEY);
+
+        String url = BASE_URL + "/api/v3/order?" + query + "&signature=" + signature;
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("X-MBX-APIKEY", API_KEY)
+                .GET()
+                .build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Order Status: " + response.body());
+    }
 
     @Override
     public Double buy(Crypto crypto, Double price, Double volume) {
