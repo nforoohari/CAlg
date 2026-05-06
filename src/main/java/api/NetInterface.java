@@ -2,12 +2,12 @@ package api;
 
 public interface NetInterface {
 
-    Double buy(Crypto crypto , Double price, Double volume);
+    String buy(Crypto crypto , Double volume, Double price) throws Exception;
 
-    Double sell(Crypto crypto, Double price, Double volume);
+    String sell(Crypto crypto, Double volume, Double price) throws Exception;
 
-    CryptoRecord getMarketInfo(Crypto crypto, String interval);
+    CryptoRecord getMarketInfo(Crypto crypto, String interval) throws Exception;
 
-    OrderStatus checkOrderStatus(Crypto crypto, long orderId);
+    OrderStatus checkOrderStatus(Crypto crypto, long orderId) throws Exception;
 
 }

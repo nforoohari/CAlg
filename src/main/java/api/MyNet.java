@@ -2,12 +2,12 @@ package api;
 
 public class MyNet implements NetInterface {
     @Override
-    public Double buy(Crypto crypto, Double price, Double volume) {
+    public String buy(Crypto crypto , Double volume, Double price) {
         return null;
     }
 
     @Override
-    public Double sell(Crypto crypto, Double price, Double volume) {
+    public String sell(Crypto crypto, Double volume, Double price) {
         return null;
     }
 

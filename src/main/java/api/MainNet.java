@@ -14,32 +14,33 @@ public class MainNet implements NetInterface {
     private static final String SECRET_KEY = "YOUR_SECRET_KEY";
     private static final String BASE_URL = "https://api.binance.com";
 
-    public static void main(String[] args) throws Exception {
+    @Override
+    public String buy(Crypto crypto, Double volume, Double price) throws Exception {
 
-        // دریافت کندل 1 دقیقه اخیر
-        getKlines("BTCUSDT");
-
-        // ثبت سفارش خرید
-        placeOrder("BTCUSDT", "BUY", 0.001, 30000);
+        return placeOrder(crypto.getName() + "USDT", "BUY", volume, price);
     }
 
-    // 📊 دریافت اطلاعات کندل (قیمت و حجم)
-    public static void getKlines(String symbol) throws Exception {
-        String endpoint = "/api/v3/klines?symbol=" + symbol + "&interval=1m&limit=1";
+    @Override
+    public String sell(Crypto crypto, Double volume, Double price) throws Exception {
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + endpoint))
-                .GET()
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        System.out.println("Kline Data: " + response.body());
+        return placeOrder(crypto.getName() + "USDT", "SELL", volume, price);
     }
+
+    @Override
+    public CryptoRecord getMarketInfo(Crypto crypto, String interval) throws Exception {
+        getKlines(crypto.getName()+"USDT", interval);
+        return null;
+    }
+
+    @Override
+    public OrderStatus checkOrderStatus(Crypto crypto, long orderId) throws Exception {
+        getOrderStatus(crypto.getName()+"USDT",orderId);
+        return null;
+    }
+
 
     // 🛒 ثبت سفارش
-    public static void placeOrder(String symbol, String side, double quantity, double price) throws Exception {
+    public static String placeOrder(String symbol, String side, double quantity, double price) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -65,6 +66,8 @@ public class MainNet implements NetInterface {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         System.out.println("Order Response: " + response.body());
+
+        return ("Order Response: " + response.body());
     }
 
     // 🔐 امضای درخواست
@@ -82,6 +85,22 @@ public class MainNet implements NetInterface {
         }
         return hex.toString();
     }
+
+    // 📊 دریافت اطلاعات کندل (قیمت و حجم)
+    public static void getKlines(String symbol, String interval) throws Exception {
+        String endpoint = "/api/v3/klines?symbol=" + symbol + "&interval="+interval+"&limit=1";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + endpoint))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Kline Data: " + response.body());
+    }
+
     public static void getOrderStatus(String symbol, long orderId) throws Exception {
 
         long timestamp = System.currentTimeMillis();
@@ -106,24 +125,13 @@ public class MainNet implements NetInterface {
         System.out.println("Order Status: " + response.body());
     }
 
-    @Override
-    public Double buy(Crypto crypto, Double price, Double volume) {
-        return null;
-    }
+    public static void main(String[] args) throws Exception {
 
-    @Override
-    public Double sell(Crypto crypto, Double price, Double volume) {
-        return null;
-    }
+        // دریافت کندل 1 دقیقه اخیر
+        getKlines("BTCUSDT","1m");
 
-    @Override
-    public CryptoRecord getMarketInfo(Crypto crypto, String interval) {
-        return null;
-    }
-
-    @Override
-    public OrderStatus checkOrderStatus(Crypto crypto, long orderId) {
-        return null;
+        // ثبت سفارش خرید
+        placeOrder("BTCUSDT", "BUY", 0.001, 30000);
     }
 
 }
