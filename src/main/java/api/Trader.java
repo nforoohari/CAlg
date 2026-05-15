@@ -2,13 +2,13 @@ package api;
 
 public class Trader {
 
-    private NetInterface netInterface;
-    private AlgInterface algInterface;
+    private INet INet;
+    private ICryptoAlg ICryptoAlg;
 
-    public Trader(AlgInterface algInterface, NetInterface netInterface) {
+    public Trader(ICryptoAlg ICryptoAlg, INet INet) {
 
-        this.netInterface = netInterface;
-        this.algInterface = algInterface;
+        this.INet = INet;
+        this.ICryptoAlg = ICryptoAlg;
 
     }
 

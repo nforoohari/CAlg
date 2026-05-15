@@ -1,13 +1,13 @@
 package api;
 
-public class MyNet implements NetInterface {
+public class MyNet implements INet {
     @Override
-    public String buy(Crypto crypto , Double volume, Double price) {
+    public OrderStatus buy(Crypto crypto , Double volume, Double price) {
         return null;
     }
 
     @Override
-    public String sell(Crypto crypto, Double volume, Double price) {
+    public OrderStatus sell(Crypto crypto, Double volume, Double price) {
         return null;
     }
 

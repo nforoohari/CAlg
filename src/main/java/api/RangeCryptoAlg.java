@@ -1,6 +1,14 @@
 package api;
 
-public class CeilingAlg implements AlgInterface {
+public class RangeCryptoAlg implements ICryptoAlg {
+
+    private INet INet;
+    private CryptoAlgParams cryptoAlgParams;
+
+    public RangeCryptoAlg(INet INet) {
+        this.INet = INet;
+    }
+
     @Override
     public void start() {
 
@@ -32,31 +40,34 @@ public class CeilingAlg implements AlgInterface {
     }
 
     @Override
-    public void setNet(NetInterface netInterface) {
-
+    public void setNet(INet INet) {
+        this.INet = INet;
     }
 
     @Override
-    public NetInterface getNet() {
-        return null;
+    public INet getNet() {
+        return this.INet;
     }
 
     @Override
-    public void setAlgPrameters(AlgParameters algParameters) {
-
+    public void setAlgPrameters(CryptoAlgParams cryptoAlgParams) {
+        this.cryptoAlgParams = cryptoAlgParams;
     }
 
     @Override
-    public AlgParameters getAlgPrameters() {
-        return null;
+    public CryptoAlgParams getAlgPrameters() {
+        return cryptoAlgParams;
     }
+
+
 }
+
 
 //package dataAnalyzer.dummy;
 //
 //        import java.util.Date;
 //
-//public class CeilingAlg extends Thread {
+//public class RangeCryptoAlg extends Thread {
 //
 //    private final C c;
 //    private Double limitedPrice;
@@ -75,12 +86,13 @@ public class CeilingAlg implements AlgInterface {
 //    private boolean firstTime;
 //    private CExcelReader reader;
 //
-//    public CeilingAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
+//
+//    public RangeCryptoAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
 //        this.c = c;
 //        this.limitedPrice = limitedPrice;
 //        this.stopLoss = stopLoss;
 //        this.baseVolume = volume;
-//        this.volume = volume;
+//        this.volume = 0.0;
 //        this.delta = deltaPercent / 100;
 //        this.deltaPrice = this.delta * limitedPrice;
 //        this.ascending = ascendingPercent / 100;
@@ -130,7 +142,7 @@ public class CeilingAlg implements AlgInterface {
 //            System.out.println("limitedPrice : " + limitedPrice);
 //            System.out.println("stopLoss : " + stopLoss);
 //            System.out.println("deltaPrice : " + deltaPrice);
-//            System.out.println("limitedPrice - deltaPrice : " + (limitedPrice - deltaPrice));
+//            System.out.println("limitedPrice + deltaPrice : " + (limitedPrice + deltaPrice));
 //            System.out.println("ascendingPrice : " + ascendingPrice);
 //            startAlg();
 //        }
@@ -151,46 +163,54 @@ public class CeilingAlg implements AlgInterface {
 //        boolean sellCheck = false;
 //        CRecord rec = null;
 //
-//        while (!sellCheck) {
+//        while (!buyCheck) {
 //            rec = reader.getNext();
 //            if (rec != null) {
-//                if (rec.getHigh() > limitedPrice) {
+//                if (rec.getLow() < limitedPrice) {
 //
-//                    broughtInAmount = firstTime ? baseVolume * rec.getHigh() : broughtInAmount;
-//                    sellCheck = sell(rec.getC(), rec.getHigh(), volume);
-//                    soldAmount = volume * rec.getHigh() * (1 - fee);
-//                    feeAmount += volume * (rec.getHigh() * fee);
-//                    volume = 0.0;
+//                    broughtInAmount = firstTime ? baseVolume * rec.getLow() * (1 + fee) : broughtInAmount;
+//                    volume = firstTime ? baseVolume : soldAmount / (rec.getLow() * (1 + fee));
+//                    buyCheck = buy(rec.getC(), rec.getLow(), volume);
+//                    feeAmount += volume * (rec.getLow() * fee);
+//                    soldAmount = 0.0;
 //                    firstTime = false;
 //
 //                }
 //            } else {
 //
 //                running = false;
-//                buyCheck = true;
+//                sellCheck = true;
 //                break;
 //
 //            }
 //        }
 //
-//        while (!buyCheck) {
+//        while (!sellCheck) {
 //            rec = reader.getNext();
 //            if (rec != null) {
-//                if (rec.getLow() < (limitedPrice - deltaPrice)) {
+//                if (rec.getHigh() > (limitedPrice + deltaPrice)) {
 //
-//                    volume = soldAmount / (rec.getLow() * (1 + fee));
-//                    buyCheck = buy(rec.getC(), rec.getLow(), volume);
-//                    feeAmount += volume * rec.getLow() * fee;
-//                    soldAmount = 0.0;
+//                    sellCheck = sell(rec.getC(), rec.getHigh(), volume);
+//                    soldAmount = volume * rec.getHigh() * (1 - fee);
+//                    feeAmount += volume * (rec.getHigh() * fee);
+//                    volume = 0.0;
 //
-//                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * limitedPrice) ? (deltaPrice + ascendingPrice) : deltaPrice;
+//                    limitedPrice += ascendingPrice;
+//                    stopLoss += ascendingPrice;
+//                    deltaPrice = delta * limitedPrice;
+//                    ascendingPrice = ascending * limitedPrice;
 //
-//                } else if (rec.getClose() > stopLoss) {
+//                } else if (rec.getClose() < stopLoss) {
 //
-//                    volume = soldAmount / (rec.getClose() * (1 + fee));
-//                    buyCheck = buy(rec.getC(), rec.getClose(), volume);
+//                    sellCheck = sell(rec.getC(), rec.getClose(), volume);
+//                    soldAmount = volume * rec.getClose() * (1 - fee);
 //                    feeAmount += volume * (rec.getClose() * fee);
-//                    soldAmount = 0.0;
+//                    volume = 0.0;
+//
+//                    limitedPrice = stopLoss - deltaPrice;
+//                    stopLoss = limitedPrice - deltaPrice;
+//                    deltaPrice = delta * limitedPrice;
+//                    ascendingPrice = ascending * limitedPrice;
 //
 //                    running = false;
 //
@@ -204,6 +224,7 @@ public class CeilingAlg implements AlgInterface {
 //        }
 //    }
 //}
-
+//
+//
 
 

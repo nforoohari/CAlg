@@ -1,14 +1,6 @@
 package api;
 
-public class RangeAlg implements AlgInterface {
-
-    private NetInterface netInterface;
-    private AlgParameters algParameters;
-
-    public RangeAlg(NetInterface netInterface) {
-        this.netInterface = netInterface;
-    }
-
+public class FloorCryptoAlg implements ICryptoAlg {
     @Override
     public void start() {
 
@@ -40,26 +32,24 @@ public class RangeAlg implements AlgInterface {
     }
 
     @Override
-    public void setNet(NetInterface netInterface) {
-        this.netInterface = netInterface;
+    public void setNet(INet INet) {
+
     }
 
     @Override
-    public NetInterface getNet() {
-        return this.netInterface;
+    public INet getNet() {
+        return null;
     }
 
     @Override
-    public void setAlgPrameters(AlgParameters algParameters) {
-        this.algParameters = algParameters;
+    public void setAlgPrameters(CryptoAlgParams cryptoAlgParams) {
+
     }
 
     @Override
-    public AlgParameters getAlgPrameters() {
-        return algParameters;
+    public CryptoAlgParams getAlgPrameters() {
+        return null;
     }
-
-
 }
 
 
@@ -67,7 +57,7 @@ public class RangeAlg implements AlgInterface {
 //
 //        import java.util.Date;
 //
-//public class RangeAlg extends Thread {
+//public class FloorCryptoAlg extends Thread {
 //
 //    private final C c;
 //    private Double limitedPrice;
@@ -87,7 +77,7 @@ public class RangeAlg implements AlgInterface {
 //    private CExcelReader reader;
 //
 //
-//    public RangeAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
+//    public FloorCryptoAlg(C c, Double limitedPrice, Double stopLoss, Double volume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
 //        this.c = c;
 //        this.limitedPrice = limitedPrice;
 //        this.stopLoss = stopLoss;
@@ -195,10 +185,7 @@ public class RangeAlg implements AlgInterface {
 //                    feeAmount += volume * (rec.getHigh() * fee);
 //                    volume = 0.0;
 //
-//                    limitedPrice += ascendingPrice;
-//                    stopLoss += ascendingPrice;
-//                    deltaPrice = delta * limitedPrice;
-//                    ascendingPrice = ascending * limitedPrice;
+//                    deltaPrice = (deltaPrice + ascendingPrice) > (2 * fee * (limitedPrice + (deltaPrice + ascendingPrice))) ? (deltaPrice + ascendingPrice) : deltaPrice;
 //
 //                } else if (rec.getClose() < stopLoss) {
 //
@@ -206,11 +193,6 @@ public class RangeAlg implements AlgInterface {
 //                    soldAmount = volume * rec.getClose() * (1 - fee);
 //                    feeAmount += volume * (rec.getClose() * fee);
 //                    volume = 0.0;
-//
-//                    limitedPrice = stopLoss - deltaPrice;
-//                    stopLoss = limitedPrice - deltaPrice;
-//                    deltaPrice = delta * limitedPrice;
-//                    ascendingPrice = ascending * limitedPrice;
 //
 //                    running = false;
 //
@@ -224,7 +206,6 @@ public class RangeAlg implements AlgInterface {
 //        }
 //    }
 //}
-//
 //
 
 

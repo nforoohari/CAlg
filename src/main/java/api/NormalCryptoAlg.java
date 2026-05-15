@@ -1,6 +1,6 @@
 package api;
 
-public class NormalAlg implements AlgInterface{
+public class NormalCryptoAlg implements ICryptoAlg {
     @Override
     public void start() {
 
@@ -32,22 +32,22 @@ public class NormalAlg implements AlgInterface{
     }
 
     @Override
-    public void setNet(NetInterface netInterface) {
+    public void setNet(INet INet) {
 
     }
 
     @Override
-    public NetInterface getNet() {
+    public INet getNet() {
         return null;
     }
 
     @Override
-    public void setAlgPrameters(AlgParameters algParameters) {
+    public void setAlgPrameters(CryptoAlgParams cryptoAlgParams) {
 
     }
 
     @Override
-    public AlgParameters getAlgPrameters() {
+    public CryptoAlgParams getAlgPrameters() {
         return null;
     }
 }

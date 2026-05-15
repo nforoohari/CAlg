@@ -8,39 +8,67 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class TestNet implements NetInterface {
+public class BinanceNet implements INet {
 
-    private static final String API_KEY = "YOUR_API_KEY";
-    private static final String SECRET_KEY = "YOUR_SECRET_KEY";
-    private static final String BASE_URL = "https://testnet.binance.vision";
+    private String API_KEY;
+    private String SECRET_KEY;
+    private String BASE_URL;
+
+    public BinanceNet() {
+        API_KEY = "YOUR_API_KEY";
+        SECRET_KEY = "YOUR_SECRET_KEY";
+        BASE_URL = "https://testnet.binance.vision"; //"https://api.binance.com"
+    }
+
+    public String getAPI_KEY() {
+        return API_KEY;
+    }
+
+    public void setAPI_KEY(String API_KEY) {
+        this.API_KEY = API_KEY;
+    }
+
+    public String getSECRET_KEY() {
+        return SECRET_KEY;
+    }
+
+    public void setSECRET_KEY(String SECRET_KEY) {
+        this.SECRET_KEY = SECRET_KEY;
+    }
+
+    public String getBASE_URL() {
+        return BASE_URL;
+    }
+
+    public void setBASE_URL(String BASE_URL) {
+        this.BASE_URL = BASE_URL;
+    }
 
     @Override
-    public String buy(Crypto crypto, Double volume, Double price) throws Exception {
+    public OrderStatus buy(Crypto crypto, Double volume, Double price) throws Exception {
 
         return placeOrder(crypto.getName() + "USDT", "BUY", volume, price);
     }
 
     @Override
-    public String sell(Crypto crypto, Double volume, Double price) throws Exception {
+    public OrderStatus sell(Crypto crypto, Double volume, Double price) throws Exception {
 
         return placeOrder(crypto.getName() + "USDT", "SELL", volume, price);
     }
 
     @Override
     public CryptoRecord getMarketInfo(Crypto crypto, String interval) throws Exception {
-        getKlines(crypto.getName()+"USDT", interval);
-        return null;
+        return getKlines(crypto.getName()+"USDT", interval);
     }
 
     @Override
     public OrderStatus checkOrderStatus(Crypto crypto, long orderId) throws Exception {
-        getOrderStatus(crypto.getName()+"USDT",orderId);
-        return null;
+        return getOrderStatus(crypto.getName()+"USDT",orderId);
     }
 
 
     // 🛒 ثبت سفارش
-    public static String placeOrder(String symbol, String side, double quantity, double price) throws Exception {
+    public OrderStatus placeOrder(String symbol, String side, double quantity, double price) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -67,11 +95,11 @@ public class TestNet implements NetInterface {
 
         System.out.println("Order Response: " + response.body());
 
-        return ("Order Response: " + response.body());
+        return null;
     }
 
     // 🔐 امضای درخواست
-    public static String hmacSHA256(String data, String key) throws Exception {
+    public String hmacSHA256(String data, String key) throws Exception {
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         mac.init(secretKey);
@@ -87,7 +115,7 @@ public class TestNet implements NetInterface {
     }
 
     // 📊 دریافت اطلاعات کندل (قیمت و حجم)
-    public static void getKlines(String symbol, String interval) throws Exception {
+    public CryptoRecord getKlines(String symbol, String interval) throws Exception {
         String endpoint = "/api/v3/klines?symbol=" + symbol + "&interval="+interval+"&limit=1";
 
         HttpClient client = HttpClient.newHttpClient();
@@ -99,9 +127,11 @@ public class TestNet implements NetInterface {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         System.out.println("Kline Data: " + response.body());
+
+        return null;
     }
 
-    public static void getOrderStatus(String symbol, long orderId) throws Exception {
+    public OrderStatus getOrderStatus(String symbol, long orderId) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -123,15 +153,18 @@ public class TestNet implements NetInterface {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         System.out.println("Order Status: " + response.body());
+
+        return null;
     }
 
     public static void main(String[] args) throws Exception {
 
+        BinanceNet bn = new BinanceNet();
         // دریافت کندل 1 دقیقه اخیر
-        getKlines("BTCUSDT","1m");
+        bn.getKlines("BTCUSDT","1m");
 
         // ثبت سفارش خرید
-        placeOrder("BTCUSDT", "BUY", 0.001, 30000);
+//        bn.placeOrder("BTCUSDT", "BUY", 0.001, 30000);
     }
 
 }
