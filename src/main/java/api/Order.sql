@@ -1,10 +1,10 @@
-CREATE DATABASE oh;
+CREATE DATABASE crypto;
 
-USE oh;
+USE crypto;
 
 CREATE TABLE order_status(
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                             oh BIGINT NOT NULL,
+                             crypto BIGINT NOT NULL,
                              side ENUM('BUY', 'SELL') NOT NULL,
                              volume DECIMAL(20, 8) NOT NULL,
                              price DECIMAL(20, 8) NOT NULL,

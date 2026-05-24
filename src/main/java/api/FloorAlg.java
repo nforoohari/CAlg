@@ -1,6 +1,6 @@
 package api;
 
-public class Akc implements Aij {
+public class FloorAlg implements IAlg {
 
     @Override
     public void initialize() throws Exception {
@@ -22,5 +22,3 @@ public class Akc implements Aij {
 
     }
 }
-
-

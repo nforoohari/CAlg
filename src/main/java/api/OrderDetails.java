@@ -2,7 +2,7 @@ package api;
 
 import java.util.Date;
 
-public class Djo {
+public class OrderDetails {
 
     private long id;
     private long orderStatusId;
@@ -10,10 +10,10 @@ public class Djo {
     private double price;
     private Date detailDate;
 
-    public Djo() {
+    public OrderDetails() {
 
     }
-    public Djo(long orderStatusId, double volume, double price, Date detailDate) {
+    public OrderDetails(long orderStatusId, double volume, double price, Date detailDate) {
         this.orderStatusId = orderStatusId;
         this.volume = volume;
         this.price = price;

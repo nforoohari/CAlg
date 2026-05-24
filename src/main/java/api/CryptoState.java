@@ -1,6 +1,6 @@
 package api;
 
-public class Syc {
+public class CryptoState {
     private volatile boolean running;
     private boolean firstTime;
     private Double volume;
@@ -8,7 +8,7 @@ public class Syc {
     private Double soldAmount;
     private Double feeAmount;
 
-    public Syc() {
+    public CryptoState() {
 
         this.running = true;
         this.firstTime = true;

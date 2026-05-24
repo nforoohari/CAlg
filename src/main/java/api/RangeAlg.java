@@ -2,24 +2,24 @@ package api;
 
 import java.util.Date;
 
-public class Afr extends Thread implements Aij {
+public class RangeAlg extends Thread implements IAlg {
 
-    private Ngi inet;
-    private Pdc params;
-    private Syc state;
+    private INet inet;
+    private CryptoParams params;
+    private CryptoState state;
     private long sleepTime;
 
-    public Afr() {
+    public RangeAlg() {
 
     }
 
     @Override
     public void initialize() throws Exception {
 
-        this.inet = new Nem(Lp.OneMinute, Oh.BBB, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-        this.params = new Pdc(Oh.BBB, Lp.OneMinute, 36000.0, 34200.0, 10.0, 2.0, 0.0, 0.5);
-        this.state = new Syc();
-        this.sleepTime = this.inet instanceof Nem ? 1 : Lp.OneMinute.getMillis();
+        this.inet = new MyNet(Interval.OneMinute, Crypto.BBB, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+        this.params = new CryptoParams(Crypto.BBB, Interval.OneMinute, 36000.0, 34200.0, 10.0, 2.0, 0.0, 0.5);
+        this.state = new CryptoState();
+        this.sleepTime = this.inet instanceof MyNet ? 1 : Interval.OneMinute.getMillis();
         System.out.println("System is ready.");
     }
 
@@ -55,8 +55,8 @@ public class Afr extends Thread implements Aij {
 
         boolean buyCheck = false;
         boolean sellCheck = false;
-        Rxc rec = null;
-        Ofc order = null;
+        CryptoRecord rec = null;
+        CryptoOrder order = null;
 
         while (!buyCheck) {
             rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());

@@ -5,19 +5,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Dio {
+public class OrderDAO {
 
     // INSERT ORDER STATUS
-    public static long insertOrderStatus(Spo order) throws Exception {
+    public static long insertOrderStatus(OrderStatus order) throws Exception {
 
         String sql = """
                 INSERT INTO order_status
-                (oh, side, volume, price, ordered_date, completed)
+                (crypto, side, volume, price, ordered_date, completed)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps =
                         con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
@@ -48,7 +48,7 @@ public class Dio {
     }
 
     // INSERT ORDER DETAIL
-    public static void insertOrderDetail(Djo detail) throws Exception {
+    public static void insertOrderDetail(OrderDetails detail) throws Exception {
 
         String sql = """
                 INSERT INTO order_details
@@ -57,7 +57,7 @@ public class Dio {
                 """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
 
@@ -75,12 +75,12 @@ public class Dio {
     }
 
     // GET ORDER BY ID
-    public static Spo getOrderById(long id) throws Exception {
+    public static OrderStatus getOrderById(long id) throws Exception {
 
         String sql = "SELECT * FROM order_status WHERE id=?";
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
 
@@ -90,10 +90,10 @@ public class Dio {
 
             if (rs.next()) {
 
-                Spo order = new Spo();
+                OrderStatus order = new OrderStatus();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Oh.fromCode(rs.getLong("oh")));
+                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -107,9 +107,9 @@ public class Dio {
     }
 
     // GET ALL ORDERS
-    public static List<Spo> getAllOrders() throws Exception {
+    public static List<OrderStatus> getAllOrders() throws Exception {
 
-        List<Spo> list = new ArrayList<>();
+        List<OrderStatus> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_status
@@ -117,17 +117,17 @@ public class Dio {
                 """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ) {
 
             while (rs.next()) {
 
-                Spo order = new Spo();
+                OrderStatus order = new OrderStatus();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Oh.fromCode(rs.getLong("oh")));
+                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -143,20 +143,20 @@ public class Dio {
     }
 
     // GET COMPLETED ORDERS
-    public static List<Spo> getOrdersByCompletion(
-            Oh c, boolean completed
+    public static List<OrderStatus> getOrdersByCompletion(
+            Crypto c, boolean completed
     ) throws Exception {
 
-        List<Spo> list = new ArrayList<>();
+        List<OrderStatus> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_status
-                WHERE completed=? AND oh=?
+                WHERE completed=? AND crypto=?
                 ORDER BY ordered_date DESC
                 """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
 
@@ -167,10 +167,10 @@ public class Dio {
 
             while (rs.next()) {
 
-                Spo order = new Spo();
+                OrderStatus order = new OrderStatus();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Oh.fromCode(rs.getLong("oh")));
+                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -186,11 +186,11 @@ public class Dio {
     }
 
     // GET DETAILS OF ORDER
-    public static List<Djo> getOrderDetails(
+    public static List<OrderDetails> getOrderDetails(
             long orderId
     ) throws Exception {
 
-        List<Djo> list = new ArrayList<>();
+        List<OrderDetails> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_detail
@@ -199,7 +199,7 @@ public class Dio {
                 """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
 
@@ -209,7 +209,7 @@ public class Dio {
 
             while (rs.next()) {
 
-                Djo detail = new Djo();
+                OrderDetails detail = new OrderDetails();
 
                 detail.setId(rs.getLong("id"));
                 detail.setOrderStatusId(rs.getLong("order_status_id"));
@@ -238,7 +238,7 @@ public class Dio {
             """;
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps =
                         con.prepareStatement(sql)
         ) {
@@ -261,7 +261,7 @@ public class Dio {
         String sql = "DELETE FROM order_status WHERE id=?";
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
 
@@ -278,7 +278,7 @@ public class Dio {
         String sql = "DELETE FROM order_details WHERE order_status_id=?";
 
         try (
-                Connection con = Byd.getConnection();
+                Connection con = DB.getConnection();
                 PreparedStatement ps = con.prepareStatement(sql)
         ) {
 

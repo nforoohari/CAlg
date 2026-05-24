@@ -2,10 +2,10 @@ package api;
 
 import java.util.Date;
 
-public class Spo {
+public class OrderStatus {
 
     private long id;
-    private Oh oh;
+    private Crypto crypto;
     private String side;
     private double volume;
     private double price;
@@ -13,11 +13,11 @@ public class Spo {
     private boolean completed;
     private Date completedDate;
 
-    public Spo() {
+    public OrderStatus() {
     }
 
-    public Spo(Oh oh, String side, double volume, double price, Date orderedDate) {
-        this.oh = oh;
+    public OrderStatus(Crypto crypto, String side, double volume, double price, Date orderedDate) {
+        this.crypto = crypto;
         this.side = side;
         this.volume = volume;
         this.price = price;
@@ -34,12 +34,12 @@ public class Spo {
         this.id = id;
     }
 
-    public Oh getCrypto() {
-        return oh;
+    public Crypto getCrypto() {
+        return crypto;
     }
 
-    public void setCrypto(Oh oh) {
-        this.oh = oh;
+    public void setCrypto(Crypto crypto) {
+        this.crypto = crypto;
     }
 
     public String getSide() {

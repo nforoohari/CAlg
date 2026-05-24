@@ -1,6 +1,6 @@
 package api;
 
-public enum Oh {
+public enum Crypto {
     BBB(1,"BBB"),
     EEE(2,"EEE"),
     TTT(3,"TTT"),
@@ -15,7 +15,7 @@ public enum Oh {
 
     private final String name;
 
-    Oh(int code, String name) {
+    Crypto(int code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -28,8 +28,8 @@ public enum Oh {
         return name;
     }
 
-    public static Oh fromCode(long code) {
-        for (Oh c : Oh.values()) {
+    public static Crypto fromCode(long code) {
+        for (Crypto c : Crypto.values()) {
             if (c.getCode() == code) {
                 return c;
             }

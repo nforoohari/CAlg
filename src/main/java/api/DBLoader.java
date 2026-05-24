@@ -9,14 +9,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Lwd {
+public class DBLoader {
 
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZoneId tehranZone = ZoneId.of("Asia/Tehran");
 
 
-    public static List<Rxc> load(String tableName, Oh oh, String startTime, String endTime) throws Exception {
+    public static List<CryptoRecord> load(String tableName, Crypto crypto, String startTime, String endTime) throws Exception {
 
         LocalDateTime startDate = LocalDateTime.parse(startTime, formatter);
         LocalDateTime endDate = LocalDateTime.parse(endTime, formatter);
@@ -27,9 +27,9 @@ public class Lwd {
         long startMs = startDate.atZone(tehranZone).toInstant().toEpochMilli();
         long endMs = endDate.atZone(tehranZone).toInstant().toEpochMilli();
 
-        Connection conn = Byd.getConnection();
+        Connection conn = DB.getConnection();
 
-        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + oh.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
+        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + crypto.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
 
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -38,12 +38,12 @@ public class Lwd {
 
         ResultSet rs = ps.executeQuery();
 
-        List<Rxc> list = new ArrayList<>();
+        List<CryptoRecord> list = new ArrayList<>();
 
         while (rs.next()) {
 
-            list.add(new Rxc(
-                    Oh.fromCode(rs.getLong("crypto")),
+            list.add(new CryptoRecord(
+                    Crypto.fromCode(rs.getLong("crypto")),
                     rs.getTimestamp("interval_date"),
                     rs.getDouble("open"),
                     rs.getDouble("high"),

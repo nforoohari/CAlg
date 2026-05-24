@@ -1,6 +1,6 @@
 package api;
 
-public class Azf implements Aij {
+public class CeilingAlg implements IAlg {
 
     @Override
     public void initialize() throws Exception {
@@ -22,3 +22,5 @@ public class Azf implements Aij {
 
     }
 }
+
+

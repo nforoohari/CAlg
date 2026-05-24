@@ -2,9 +2,9 @@ package api;
 
 import java.util.Date;
 
-public class Rxc {
+public class CryptoRecord {
 
-    private Oh oh;
+    private Crypto crypto;
     private final Date date;
     private final double open;
     private final double high;
@@ -12,9 +12,9 @@ public class Rxc {
     private final double close;
     private final double volume;
 
-    public Rxc(Oh oh, Date date, double open, double high,
-               double low, double close, double volume) {
-        this.oh = oh;
+    public CryptoRecord(Crypto crypto, Date date, double open, double high,
+                        double low, double close, double volume) {
+        this.crypto = crypto;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -23,9 +23,9 @@ public class Rxc {
         this.volume = volume;
     }
 
-    public Rxc(Date date, double open, double high,
-               double low, double close, double volume) {
-        this.oh = Oh.SAM;
+    public CryptoRecord(Date date, double open, double high,
+                        double low, double close, double volume) {
+        this.crypto = Crypto.SAM;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -34,8 +34,8 @@ public class Rxc {
         this.volume = volume;
     }
 
-    public Oh getCrypto() {
-        return oh;
+    public Crypto getCrypto() {
+        return crypto;
     }
 
     public Date getDate() {
@@ -62,14 +62,14 @@ public class Rxc {
         return volume;
     }
 
-    public void setCrypto(Oh oh) {
-        this.oh = oh;
+    public void setCrypto(Crypto crypto) {
+        this.crypto = crypto;
     }
 
     @Override
     public String toString() {
         return "CryptoRecord{" +
-                "crypto=" + oh.getName() +
+                "crypto=" + crypto.getName() +
                 ", date='" + date + '\'' +
                 ", open=" + open +
                 ", high=" + high +

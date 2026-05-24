@@ -1,6 +1,6 @@
 package api;
 
-public enum Lp {
+public enum Interval {
     OneSecond("1s", "crypto_second", 1000),
     OneMinute("1m", "crypto_minute", 60_000),
     OneHour("1h", "crypto_hour", 3_600_000),
@@ -10,7 +10,7 @@ public enum Lp {
     private final String tableName;
     private final long millis;
 
-    Lp(String name, String tableName, long millis) {
+    Interval(String name, String tableName, long millis) {
         this.name = name;
         this.tableName = tableName;
         this.millis = millis;

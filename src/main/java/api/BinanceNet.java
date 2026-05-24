@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Njb implements Ngi {
+public class BinanceNet implements INet {
 
-    private Lp lp;
-    private Oh oh;
+    private Interval interval;
+    private Crypto crypto;
     private String API_KEY;
     private String SECRET_KEY;
     private String BASE_URL;
@@ -26,9 +26,9 @@ public class Njb implements Ngi {
     DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public Njb(Lp lp, Oh oh) {
-        this.lp = lp;
-        this.oh = oh;
+    public BinanceNet(Interval interval, Crypto crypto) {
+        this.interval = interval;
+        this.crypto = crypto;
         this.API_KEY = "YOUR_API_KEY";
         this.SECRET_KEY = "YOUR_SECRET_KEY";
         this.BASE_URL = "https://testnet.binance.vision"; //"https://api.binance.com"
@@ -59,20 +59,20 @@ public class Njb implements Ngi {
         this.BASE_URL = BASE_URL;
     }
 
-    public Lp getInterval() {
-        return lp;
+    public Interval getInterval() {
+        return interval;
     }
 
-    public void setInterval(Lp lp) {
-        this.lp = lp;
+    public void setInterval(Interval interval) {
+        this.interval = interval;
     }
 
-    public Oh getCrypto() {
-        return oh;
+    public Crypto getCrypto() {
+        return crypto;
     }
 
-    public void setCrypto(Oh oh) {
-        this.oh = oh;
+    public void setCrypto(Crypto crypto) {
+        this.crypto = crypto;
     }
 
     public boolean isOperational() {
@@ -84,60 +84,60 @@ public class Njb implements Ngi {
     }
 
     @Override
-    public Ofc buy(Oh oh, Double volume, Double price) throws Exception {
+    public CryptoOrder buy(Crypto crypto, Double volume, Double price) throws Exception {
 
-        Ofc co = null;
-        Spo os = null;
+        CryptoOrder co = null;
+        OrderStatus os = null;
 
-        System.out.println("Buy : " + oh.getName() + ", Volume : " + volume + ", Price : " + price);
+        System.out.println("Buy : " + crypto.getName() + ", Volume : " + volume + ", Price : " + price);
 
         if (operational) {
-            co = placeOrder(oh.getName() + "USDT", "BUY", volume, price);
-            Dio.insertOrderStatus(co.getOrderStatus());
-            for (Djo o : co.getDetails()) {
-                Dio.insertOrderDetail(o);
+            co = placeOrder(crypto.getName() + "USDT", "BUY", volume, price);
+            OrderDAO.insertOrderStatus(co.getOrderStatus());
+            for (OrderDetails o : co.getDetails()) {
+                OrderDAO.insertOrderDetail(o);
             }
         } else {
-            co = new Ofc();
-            os = new Spo(oh, "BUY", volume, price, new Date());
-            Dio.insertOrderStatus(os);
+            co = new CryptoOrder();
+            os = new OrderStatus(crypto, "BUY", volume, price, new Date());
+            OrderDAO.insertOrderStatus(os);
             co.setOrderStatus(os);
         }
         return co;
     }
 
     @Override
-    public Ofc sell(Oh oh, Double volume, Double price) throws Exception {
+    public CryptoOrder sell(Crypto crypto, Double volume, Double price) throws Exception {
 
-        Ofc co = null;
-        Spo os = null;
+        CryptoOrder co = null;
+        OrderStatus os = null;
 
-        System.out.println("Sell : " + oh.getName() + ", Volume : " + volume + ", Price : " + price);
+        System.out.println("Sell : " + crypto.getName() + ", Volume : " + volume + ", Price : " + price);
 
         if (operational) {
-            co = placeOrder(oh.getName() + "USDT", "SELL", volume, price);
-            Dio.insertOrderStatus(co.getOrderStatus());
-            for (Djo o : co.getDetails()) {
-                Dio.insertOrderDetail(o);
+            co = placeOrder(crypto.getName() + "USDT", "SELL", volume, price);
+            OrderDAO.insertOrderStatus(co.getOrderStatus());
+            for (OrderDetails o : co.getDetails()) {
+                OrderDAO.insertOrderDetail(o);
             }
         } else {
-            co = new Ofc();
-            os = new Spo(oh, "SELL", volume, price, new Date());
-            Dio.insertOrderStatus(os);
+            co = new CryptoOrder();
+            os = new OrderStatus(crypto, "SELL", volume, price, new Date());
+            OrderDAO.insertOrderStatus(os);
             co.setOrderStatus(os);
         }
         return co;
     }
 
     @Override
-    public Rxc getMarketInfo(Oh oh, String interval) throws Exception {
+    public CryptoRecord getMarketInfo(Crypto crypto, String interval) throws Exception {
 
-        Rxc cr;
+        CryptoRecord cr;
 
-        if (this.oh != oh || !this.lp.getName().equals(interval)) {
+        if (this.crypto != crypto || !this.interval.getName().equals(interval)) {
             return null;
         }
-        cr = getKlines(oh.getName() + "USDT", interval);
+        cr = getKlines(crypto.getName() + "USDT", interval);
 
         if (!operational) {
             offlineCheckOrderStatus(cr);
@@ -147,79 +147,79 @@ public class Njb implements Ngi {
     }
 
     @Override
-    public Ofc checkOrderStatus(Oh oh, long orderId) throws Exception {
-        Ofc co = null;
-        Spo os = null;
+    public CryptoOrder checkOrderStatus(Crypto crypto, long orderId) throws Exception {
+        CryptoOrder co = null;
+        OrderStatus os = null;
 
         if (operational) {
-            co = getOrderStatus(oh.getName() + "USDT", orderId);
-            Dio.deleteOrderStatusById(orderId);
-            Dio.deleteOrderDetailsByStatusId(orderId);
-            Dio.insertOrderStatus(co.getOrderStatus());
-            for (Djo o : co.getDetails()) {
-                Dio.insertOrderDetail(o);
+            co = getOrderStatus(crypto.getName() + "USDT", orderId);
+            OrderDAO.deleteOrderStatusById(orderId);
+            OrderDAO.deleteOrderDetailsByStatusId(orderId);
+            OrderDAO.insertOrderStatus(co.getOrderStatus());
+            for (OrderDetails o : co.getDetails()) {
+                OrderDAO.insertOrderDetail(o);
             }
         } else {
-            os = Dio.getOrderById(orderId);
-            List<Djo> lod = Dio.getOrderDetails(orderId);
-            co = new Ofc();
+            os = OrderDAO.getOrderById(orderId);
+            List<OrderDetails> lod = OrderDAO.getOrderDetails(orderId);
+            co = new CryptoOrder();
             co.setOrderStatus(os);
             co.setDetails(lod);
         }
         return co;
     }
 
-    private void offlineCheckOrderStatus(Rxc cr) throws Exception {
+    private void offlineCheckOrderStatus(CryptoRecord cr) throws Exception {
 
-        List<Spo> los;
-        List<Djo> lod;
+        List<OrderStatus> los;
+        List<OrderDetails> lod;
 
-        los = Dio.getOrdersByCompletion(cr.getCrypto(),false);
+        los = OrderDAO.getOrdersByCompletion(cr.getCrypto(),false);
 
-        for (Spo os : los) {
+        for (OrderStatus os : los) {
 
             if ("BUY".equals(os.getSide()) && os.getPrice() > cr.getLow()) {
 
-                lod = Dio.getOrderDetails(os.getId());
+                lod = OrderDAO.getOrderDetails(os.getId());
                 double bv = 0.0;
                 double lv = 0.0;
                 double ov = os.getVolume();
                 double cv = cr.getVolume();
                 boolean comp = false;
 
-                for (Djo od : lod) {
+                for (OrderDetails od : lod) {
                     bv += od.getVolume();
                 }
 
                 lv = Math.min((ov - bv), cv);
                 comp = (ov - bv) <= cv;
 
-                Dio.insertOrderDetail(new Djo(os.getId(), lv, (cr.getLow() + cr.getClose()) / 2, cr.getDate()));
+                OrderDAO.insertOrderDetail(new OrderDetails(os.getId(), lv, (cr.getLow() + cr.getClose()) / 2, cr.getDate()));
 
                 if (comp) {
-                    Dio.completeOrder(os.getId(),cr.getDate());
+                    OrderDAO.completeOrder(os.getId(),cr.getDate());
                 }
 
             } else if ("SELL".equals(os.getSide()) && os.getPrice() < cr.getHigh()) {
 
-                lod = Dio.getOrderDetails(os.getId());
+                lod = OrderDAO.getOrderDetails(os.getId());
                 double sv = 0.0;
                 double lv = 0.0;
                 double ov = os.getVolume();
                 double cv = cr.getVolume();
                 boolean comp = false;
 
-                for (Djo od : lod) {
+                for (OrderDetails od : lod) {
                     sv += od.getVolume();
                 }
 
                 lv = Math.min((ov - sv), cv);
                 comp = (ov - sv) <= cv;
 
-                Dio.insertOrderDetail(new Djo(os.getId(), lv, (cr.getHigh() + cr.getClose()) / 2, new Date()));
+                OrderDAO.insertOrderDetail(new OrderDetails(os.getId(), lv, (cr.getHigh() + cr.getClose()) / 2, new Date()));
 
                 if (comp) {
-                    Dio.completeOrder(os.getId(),cr.getDate());
+                    OrderDAO.completeOrder(os.getId(),cr.getDate());
                 }
             }
         }
@@ -227,7 +227,7 @@ public class Njb implements Ngi {
     }
 
     // 🛒 ثبت سفارش
-    public Ofc placeOrder(String symbol, String side, double quantity, double price) throws Exception {
+    public CryptoOrder placeOrder(String symbol, String side, double quantity, double price) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -264,11 +264,11 @@ public class Njb implements Ngi {
     }
 
     // 📊 دریافت اطلاعات کندل (قیمت و حجم)
-    public Rxc getKlines(String symbol, String interval) throws Exception {
+    public CryptoRecord getKlines(String symbol, String interval) throws Exception {
 
-        List<Rxc> rxcs = new ArrayList<>();
+        List<CryptoRecord> cryptoRecords = new ArrayList<>();
 
-        if (this.oh != oh || !this.lp.getName().equals(interval)) return null;
+        if (this.crypto != crypto || !this.interval.getName().equals(interval)) return null;
 
         String endpoint = "/api/v3/klines?symbol=" + symbol + "&interval=" + interval + "&limit=2";
 
@@ -296,13 +296,13 @@ public class Njb implements Ngi {
             double close = rowJson.getDouble(4);
             double volume = rowJson.getDouble(5);
 
-            rxcs.add(new Rxc(oh, new Date(openTimeMs), open, high, low, close, volume));
+            cryptoRecords.add(new CryptoRecord(crypto, new Date(openTimeMs), open, high, low, close, volume));
 
         }
-        return rxcs.get(0);
+        return cryptoRecords.get(0);
     }
 
-    public Ofc getOrderStatus(String symbol, long orderId) throws Exception {
+    public CryptoOrder getOrderStatus(String symbol, long orderId) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -324,7 +324,7 @@ public class Njb implements Ngi {
 
     public static void main(String[] args) throws Exception {
 
-        Njb bn = new Njb(Lp.OneMinute, Oh.BBB);
+        BinanceNet bn = new BinanceNet(Interval.OneMinute, Crypto.BBB);
         // دریافت کندل 1 دقیقه اخیر
         bn.getKlines("BTCUSDT", "1m");
 

@@ -1,8 +1,8 @@
 package api;
 
-public class Pdc {
-    private final Oh oh;
-    private final Lp lp;
+public class CryptoParams {
+    private final Crypto crypto;
+    private final Interval interval;
     private Double limitedPrice;
     private Double stopLoss;
     private final Double baseVolume;
@@ -13,10 +13,10 @@ public class Pdc {
     private final Double fee;
 
 
-    public Pdc(Oh oh, Lp lp, Double limitedPrice, Double stopLoss, Double baseVolume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
+    public CryptoParams(Crypto crypto, Interval interval, Double limitedPrice, Double stopLoss, Double baseVolume, Double deltaPercent, Double ascendingPercent, Double feePercent) {
 
-        this.oh = oh;
-        this.lp = lp;
+        this.crypto = crypto;
+        this.interval = interval;
         this.limitedPrice = limitedPrice;
         this.stopLoss = stopLoss;
         this.baseVolume = baseVolume;
@@ -28,12 +28,12 @@ public class Pdc {
 
     }
 
-    public Oh getCrypto() {
-        return oh;
+    public Crypto getCrypto() {
+        return crypto;
     }
 
-    public Lp getInterval() {
-        return lp;
+    public Interval getInterval() {
+        return interval;
     }
 
     public Double getLimitedPrice() {
