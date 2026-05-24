@@ -1,13 +1,13 @@
 package api;
 
-public enum Crypto {
-    Bitcoin(1,"BTC"),
-    Ethereum(2,"ETH"),
-    Toncoin(3,"TON"),
-    Solana(4,"SOL"),
-    Chainlink(5,"LINK"),
-    Cardano(6,"ADA"),
-    PAXG(7,"PAXG"),
+public enum Oh {
+    BBB(1,"BBB"),
+    EEE(2,"EEE"),
+    TTT(3,"TTT"),
+    SSS(4,"SSS"),
+    LLL(5,"LLL"),
+    CCC(6,"CCC"),
+    PPP(7,"PPP"),
     SAM(1000,"SAM");
 
 
@@ -15,7 +15,7 @@ public enum Crypto {
 
     private final String name;
 
-    Crypto(int code, String name) {
+    Oh(int code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -28,8 +28,8 @@ public enum Crypto {
         return name;
     }
 
-    public static mainPackage.Crypto fromCode(long code) {
-        for (mainPackage.Crypto c : mainPackage.Crypto.values()) {
+    public static Oh fromCode(long code) {
+        for (Oh c : Oh.values()) {
             if (c.getCode() == code) {
                 return c;
             }
