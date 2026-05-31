@@ -1,5 +1,12 @@
-package api;
+package api.exchanges;
 
+import api.daos.Record;
+import api.enums.Currency;
+import api.enums.Interval;
+import api.daos.OrderDAO;
+import api.orders.OrderRequest;
+import api.orders.OrderState;
+import api.orders.OrderTransaction;
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -14,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class BinanceNet implements INet {
+public class Binance implements IExc {
 
     private Interval interval;
-    private Crypto crypto;
+    private Currency currency;
     private String API_KEY;
     private String SECRET_KEY;
     private String BASE_URL;
@@ -26,9 +33,9 @@ public class BinanceNet implements INet {
     DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public BinanceNet(Interval interval, Crypto crypto) {
+    public Binance(Interval interval, Currency currency) {
         this.interval = interval;
-        this.crypto = crypto;
+        this.currency = currency;
         this.API_KEY = "YOUR_API_KEY";
         this.SECRET_KEY = "YOUR_SECRET_KEY";
         this.BASE_URL = "https://testnet.binance.vision"; //"https://api.binance.com"
@@ -67,12 +74,12 @@ public class BinanceNet implements INet {
         this.interval = interval;
     }
 
-    public Crypto getCrypto() {
-        return crypto;
+    public Currency getCrypto() {
+        return currency;
     }
 
-    public void setCrypto(Crypto crypto) {
-        this.crypto = crypto;
+    public void setCrypto(Currency currency) {
+        this.currency = currency;
     }
 
     public boolean isOperational() {
@@ -84,22 +91,22 @@ public class BinanceNet implements INet {
     }
 
     @Override
-    public CryptoOrder buy(Crypto crypto, Double volume, Double price) throws Exception {
+    public OrderRequest buy(Currency currency, Double volume, Double price) throws Exception {
 
-        CryptoOrder co = null;
-        OrderStatus os = null;
+        OrderRequest co = null;
+        OrderState os = null;
 
-        System.out.println("Buy : " + crypto.getName() + ", Volume : " + volume + ", Price : " + price);
+        System.out.println("Buy : " + currency.getName() + ", Volume : " + volume + ", Price : " + price);
 
         if (operational) {
-            co = placeOrder(crypto.getName() + "USDT", "BUY", volume, price);
+            co = placeOrder(currency.getName() + "USDT", "BUY", volume, price);
             OrderDAO.insertOrderStatus(co.getOrderStatus());
-            for (OrderDetails o : co.getDetails()) {
+            for (OrderTransaction o : co.getTransactions()) {
                 OrderDAO.insertOrderDetail(o);
             }
         } else {
-            co = new CryptoOrder();
-            os = new OrderStatus(crypto, "BUY", volume, price, new Date());
+            co = new OrderRequest();
+            os = new OrderState(currency, "BUY", volume, price, new Date());
             OrderDAO.insertOrderStatus(os);
             co.setOrderStatus(os);
         }
@@ -107,22 +114,22 @@ public class BinanceNet implements INet {
     }
 
     @Override
-    public CryptoOrder sell(Crypto crypto, Double volume, Double price) throws Exception {
+    public OrderRequest sell(Currency currency, Double volume, Double price) throws Exception {
 
-        CryptoOrder co = null;
-        OrderStatus os = null;
+        OrderRequest co = null;
+        OrderState os = null;
 
-        System.out.println("Sell : " + crypto.getName() + ", Volume : " + volume + ", Price : " + price);
+        System.out.println("Sell : " + currency.getName() + ", Volume : " + volume + ", Price : " + price);
 
         if (operational) {
-            co = placeOrder(crypto.getName() + "USDT", "SELL", volume, price);
+            co = placeOrder(currency.getName() + "USDT", "SELL", volume, price);
             OrderDAO.insertOrderStatus(co.getOrderStatus());
-            for (OrderDetails o : co.getDetails()) {
+            for (OrderTransaction o : co.getTransactions()) {
                 OrderDAO.insertOrderDetail(o);
             }
         } else {
-            co = new CryptoOrder();
-            os = new OrderStatus(crypto, "SELL", volume, price, new Date());
+            co = new OrderRequest();
+            os = new OrderState(currency, "SELL", volume, price, new Date());
             OrderDAO.insertOrderStatus(os);
             co.setOrderStatus(os);
         }
@@ -130,14 +137,14 @@ public class BinanceNet implements INet {
     }
 
     @Override
-    public CryptoRecord getMarketInfo(Crypto crypto, String interval) throws Exception {
+    public Record fetchTradeData(Currency currency, String interval) throws Exception {
 
-        CryptoRecord cr;
+        Record cr;
 
-        if (this.crypto != crypto || !this.interval.getName().equals(interval)) {
+        if (this.currency != currency || !this.interval.getName().equals(interval)) {
             return null;
         }
-        cr = getKlines(crypto.getName() + "USDT", interval);
+        cr = getKlines(currency.getName() + "USDT", interval);
 
         if (!operational) {
             offlineCheckOrderStatus(cr);
@@ -147,36 +154,36 @@ public class BinanceNet implements INet {
     }
 
     @Override
-    public CryptoOrder checkOrderStatus(Crypto crypto, long orderId) throws Exception {
-        CryptoOrder co = null;
-        OrderStatus os = null;
+    public OrderRequest checkOrderStatus(Currency currency, long orderId) throws Exception {
+        OrderRequest co = null;
+        OrderState os = null;
 
         if (operational) {
-            co = getOrderStatus(crypto.getName() + "USDT", orderId);
+            co = getOrderStatus(currency.getName() + "USDT", orderId);
             OrderDAO.deleteOrderStatusById(orderId);
             OrderDAO.deleteOrderDetailsByStatusId(orderId);
             OrderDAO.insertOrderStatus(co.getOrderStatus());
-            for (OrderDetails o : co.getDetails()) {
+            for (OrderTransaction o : co.getTransactions()) {
                 OrderDAO.insertOrderDetail(o);
             }
         } else {
             os = OrderDAO.getOrderById(orderId);
-            List<OrderDetails> lod = OrderDAO.getOrderDetails(orderId);
-            co = new CryptoOrder();
+            List<OrderTransaction> lod = OrderDAO.getOrderDetails(orderId);
+            co = new OrderRequest();
             co.setOrderStatus(os);
-            co.setDetails(lod);
+            co.setTransactions(lod);
         }
         return co;
     }
 
-    private void offlineCheckOrderStatus(CryptoRecord cr) throws Exception {
+    private void offlineCheckOrderStatus(Record cr) throws Exception {
 
-        List<OrderStatus> los;
-        List<OrderDetails> lod;
+        List<OrderState> los;
+        List<OrderTransaction> lod;
 
         los = OrderDAO.getOrdersByCompletion(cr.getCrypto(),false);
 
-        for (OrderStatus os : los) {
+        for (OrderState os : los) {
 
             if ("BUY".equals(os.getSide()) && os.getPrice() > cr.getLow()) {
 
@@ -187,14 +194,14 @@ public class BinanceNet implements INet {
                 double cv = cr.getVolume();
                 boolean comp = false;
 
-                for (OrderDetails od : lod) {
+                for (OrderTransaction od : lod) {
                     bv += od.getVolume();
                 }
 
                 lv = Math.min((ov - bv), cv);
                 comp = (ov - bv) <= cv;
 
-                OrderDAO.insertOrderDetail(new OrderDetails(os.getId(), lv, (cr.getLow() + cr.getClose()) / 2, cr.getDate()));
+                OrderDAO.insertOrderDetail(new OrderTransaction(os.getId(), lv, (cr.getLow() + cr.getClose()) / 2, cr.getDate()));
 
                 if (comp) {
                     OrderDAO.completeOrder(os.getId(),cr.getDate());
@@ -209,14 +216,14 @@ public class BinanceNet implements INet {
                 double cv = cr.getVolume();
                 boolean comp = false;
 
-                for (OrderDetails od : lod) {
+                for (OrderTransaction od : lod) {
                     sv += od.getVolume();
                 }
 
                 lv = Math.min((ov - sv), cv);
                 comp = (ov - sv) <= cv;
 
-                OrderDAO.insertOrderDetail(new OrderDetails(os.getId(), lv, (cr.getHigh() + cr.getClose()) / 2, new Date()));
+                OrderDAO.insertOrderDetail(new OrderTransaction(os.getId(), lv, (cr.getHigh() + cr.getClose()) / 2, new Date()));
 
                 if (comp) {
                     OrderDAO.completeOrder(os.getId(),cr.getDate());
@@ -227,7 +234,7 @@ public class BinanceNet implements INet {
     }
 
     // 🛒 ثبت سفارش
-    public CryptoOrder placeOrder(String symbol, String side, double quantity, double price) throws Exception {
+    public OrderRequest placeOrder(String symbol, String side, double quantity, double price) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -264,11 +271,11 @@ public class BinanceNet implements INet {
     }
 
     // 📊 دریافت اطلاعات کندل (قیمت و حجم)
-    public CryptoRecord getKlines(String symbol, String interval) throws Exception {
+    public Record getKlines(String symbol, String interval) throws Exception {
 
-        List<CryptoRecord> cryptoRecords = new ArrayList<>();
+        List<Record> records = new ArrayList<>();
 
-        if (this.crypto != crypto || !this.interval.getName().equals(interval)) return null;
+        if (this.currency != currency || !this.interval.getName().equals(interval)) return null;
 
         String endpoint = "/api/v3/klines?symbol=" + symbol + "&interval=" + interval + "&limit=2";
 
@@ -296,13 +303,13 @@ public class BinanceNet implements INet {
             double close = rowJson.getDouble(4);
             double volume = rowJson.getDouble(5);
 
-            cryptoRecords.add(new CryptoRecord(crypto, new Date(openTimeMs), open, high, low, close, volume));
+            records.add(new Record(currency, new Date(openTimeMs), open, high, low, close, volume));
 
         }
-        return cryptoRecords.get(0);
+        return records.get(0);
     }
 
-    public CryptoOrder getOrderStatus(String symbol, long orderId) throws Exception {
+    public OrderRequest getOrderStatus(String symbol, long orderId) throws Exception {
 
         long timestamp = System.currentTimeMillis();
 
@@ -324,7 +331,7 @@ public class BinanceNet implements INet {
 
     public static void main(String[] args) throws Exception {
 
-        BinanceNet bn = new BinanceNet(Interval.OneMinute, Crypto.BBB);
+        Binance bn = new Binance(Interval.OneMinute, Currency.Bitcoin);
         // دریافت کندل 1 دقیقه اخیر
         bn.getKlines("BTCUSDT", "1m");
 

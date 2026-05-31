@@ -68,7 +68,7 @@ public class CryptoRecord {
 
     @Override
     public String toString() {
-        return "CryptoRecord{" +
+        return "Record{" +
                 "crypto=" + crypto.getName() +
                 ", date='" + date + '\'' +
                 ", open=" + open +

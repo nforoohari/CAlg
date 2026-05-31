@@ -1,25 +1,33 @@
-package api;
+package api.traders;
+
+import api.daos.Record;
+import api.enums.Currency;
+import api.enums.Interval;
+import api.exchanges.IExc;
+import api.exchanges.MyExc;
+import api.orders.OrderRequest;
 
 import java.util.Date;
 
-public class RangeAlg extends Thread implements IAlg {
+public class NormalRangeTrader extends Trader {
 
-    private INet inet;
-    private CryptoParams params;
+    private IExc inet;
+    private TraderSettings params;
     private CryptoState state;
     private long sleepTime;
 
-    public RangeAlg() {
-
+    public NormalRangeTrader(Currency currency, IExc exchange) {
+        super(currency, exchange);
     }
+
 
     @Override
     public void initialize() throws Exception {
 
-        this.inet = new MyNet(Interval.OneMinute, Crypto.BBB, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-        this.params = new CryptoParams(Crypto.BBB, Interval.OneMinute, 36000.0, 34200.0, 10.0, 2.0, 0.0, 0.5);
+        this.inet = new MyExc(Interval.OneMinute, Currency.Bitcoin, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+        this.params = new TraderSettings(Currency.Bitcoin, Interval.OneMinute, 36000.0, 34200.0, 10.0, 2.0, 0.0, 0.5);
         this.state = new CryptoState();
-        this.sleepTime = this.inet instanceof MyNet ? 1 : Interval.OneMinute.getMillis();
+        this.sleepTime = this.inet instanceof MyExc ? 1 : Interval.OneMinute.getMillis();
         System.out.println("System is ready.");
     }
 
@@ -51,15 +59,20 @@ public class RangeAlg extends Thread implements IAlg {
         System.out.println("((volume / baseVolume) - 1) * 100  : " + ((double) Math.round(((state.getVolume() / params.getBaseVolume()) - 1) * 10000)) / 100);
     }
 
+    @Override
+    protected void changeSettings() {
+
+    }
+
     public void doAlg() throws Exception {
 
         boolean buyCheck = false;
         boolean sellCheck = false;
-        CryptoRecord rec = null;
-        CryptoOrder order = null;
+        Record rec = null;
+        OrderRequest order = null;
 
         while (!buyCheck) {
-            rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());
+            rec = inet.fetchTradeData(params.getCrypto(), params.getInterval().getName());
             if (rec != null) {
                 if (rec.getLow() < params.getLimitedPrice()) {
 
@@ -68,8 +81,8 @@ public class RangeAlg extends Thread implements IAlg {
                     order = inet.buy(rec.getCrypto(), rec.getLow(), state.getVolume());
                     while (!(order.getOrderStatus().isCompleted()) && rec != null) {
                         Thread.sleep(sleepTime);
-                        rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());
-                        order = inet.checkOrderStatus(params.getCrypto(), order.getOrderStatus().getId());
+                        rec = inet.fetchTradeData(params.getCrypto(), params.getInterval().getName());
+                        order = inet.checkStatus(params.getCrypto(), order.getOrderStatus().getId());
                     }
                     ;
                     if (rec != null) {
@@ -99,7 +112,7 @@ public class RangeAlg extends Thread implements IAlg {
         }
 
         while (!sellCheck) {
-            rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());
+            rec = inet.fetchTradeData(params.getCrypto(), params.getInterval().getName());
             if (rec != null) {
                 if (rec.getHigh() > (params.getLimitedPrice() + params.getDeltaPrice())) {
 
@@ -107,8 +120,8 @@ public class RangeAlg extends Thread implements IAlg {
                     order = inet.sell(rec.getCrypto(), rec.getHigh(), state.getVolume());
                     while (!(order.getOrderStatus().isCompleted()) && rec != null) {
                         Thread.sleep(sleepTime);
-                        rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());
-                        order = inet.checkOrderStatus(params.getCrypto(), order.getOrderStatus().getId());
+                        rec = inet.fetchTradeData(params.getCrypto(), params.getInterval().getName());
+                        order = inet.checkStatus(params.getCrypto(), order.getOrderStatus().getId());
                     }
 
                     if (rec != null) {
@@ -144,8 +157,8 @@ public class RangeAlg extends Thread implements IAlg {
                     order = inet.sell(rec.getCrypto(), rec.getClose(), state.getVolume());
                     while (!(order.getOrderStatus().isCompleted()) && rec != null) {
                         Thread.sleep(sleepTime);
-                        rec = inet.getMarketInfo(params.getCrypto(), params.getInterval().getName());
-                        order = inet.checkOrderStatus(params.getCrypto(), order.getOrderStatus().getId());
+                        rec = inet.fetchTradeData(params.getCrypto(), params.getInterval().getName());
+                        order = inet.checkStatus(params.getCrypto(), order.getOrderStatus().getId());
                     }
                     if (rec != null) {
 

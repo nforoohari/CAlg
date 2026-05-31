@@ -1,4 +1,8 @@
-package api;
+package api.daos;
+
+import api.enums.Currency;
+import api.orders.OrderState;
+import api.orders.OrderTransaction;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,11 +12,11 @@ import java.util.List;
 public class OrderDAO {
 
     // INSERT ORDER STATUS
-    public static long insertOrderStatus(OrderStatus order) throws Exception {
+    public static long insertOrderStatus(OrderState order) throws Exception {
 
         String sql = """
                 INSERT INTO order_status
-                (crypto, side, volume, price, ordered_date, completed)
+                (currency, side, volume, price, ordered_date, completed)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
@@ -48,7 +52,7 @@ public class OrderDAO {
     }
 
     // INSERT ORDER DETAIL
-    public static void insertOrderDetail(OrderDetails detail) throws Exception {
+    public static void insertOrderDetail(OrderTransaction detail) throws Exception {
 
         String sql = """
                 INSERT INTO order_details
@@ -75,7 +79,7 @@ public class OrderDAO {
     }
 
     // GET ORDER BY ID
-    public static OrderStatus getOrderById(long id) throws Exception {
+    public static OrderState getOrderById(long id) throws Exception {
 
         String sql = "SELECT * FROM order_status WHERE id=?";
 
@@ -90,10 +94,10 @@ public class OrderDAO {
 
             if (rs.next()) {
 
-                OrderStatus order = new OrderStatus();
+                OrderState order = new OrderState();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
+                order.setCrypto(Currency.fromCode(rs.getLong("currency")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -107,9 +111,9 @@ public class OrderDAO {
     }
 
     // GET ALL ORDERS
-    public static List<OrderStatus> getAllOrders() throws Exception {
+    public static List<OrderState> getAllOrders() throws Exception {
 
-        List<OrderStatus> list = new ArrayList<>();
+        List<OrderState> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_status
@@ -124,10 +128,10 @@ public class OrderDAO {
 
             while (rs.next()) {
 
-                OrderStatus order = new OrderStatus();
+                OrderState order = new OrderState();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
+                order.setCrypto(Currency.fromCode(rs.getLong("currency")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -143,15 +147,15 @@ public class OrderDAO {
     }
 
     // GET COMPLETED ORDERS
-    public static List<OrderStatus> getOrdersByCompletion(
-            Crypto c, boolean completed
+    public static List<OrderState> getOrdersByCompletion(
+            Currency c, boolean completed
     ) throws Exception {
 
-        List<OrderStatus> list = new ArrayList<>();
+        List<OrderState> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_status
-                WHERE completed=? AND crypto=?
+                WHERE completed=? AND currency=?
                 ORDER BY ordered_date DESC
                 """;
 
@@ -167,10 +171,10 @@ public class OrderDAO {
 
             while (rs.next()) {
 
-                OrderStatus order = new OrderStatus();
+                OrderState order = new OrderState();
 
                 order.setId(rs.getLong("id"));
-                order.setCrypto(Crypto.fromCode(rs.getLong("crypto")));
+                order.setCrypto(Currency.fromCode(rs.getLong("currency")));
                 order.setSide(rs.getString("side"));
                 order.setVolume(rs.getDouble("volume"));
                 order.setPrice(rs.getDouble("price"));
@@ -186,11 +190,11 @@ public class OrderDAO {
     }
 
     // GET DETAILS OF ORDER
-    public static List<OrderDetails> getOrderDetails(
+    public static List<OrderTransaction> getOrderDetails(
             long orderId
     ) throws Exception {
 
-        List<OrderDetails> list = new ArrayList<>();
+        List<OrderTransaction> list = new ArrayList<>();
 
         String sql = """
                 SELECT * FROM order_detail
@@ -209,7 +213,7 @@ public class OrderDAO {
 
             while (rs.next()) {
 
-                OrderDetails detail = new OrderDetails();
+                OrderTransaction detail = new OrderTransaction();
 
                 detail.setId(rs.getLong("id"));
                 detail.setOrderStatusId(rs.getLong("order_status_id"));

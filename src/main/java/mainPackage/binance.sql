@@ -1,10 +1,10 @@
-CREATE DATABASE crypto;
+CREATE DATABASE currency;
 
-USE crypto;
+USE currency;
 
 CREATE TABLE crypto_day (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                             crypto BIGINT,
+                             currency BIGINT,
                              interval_date datetime,
                              open DOUBLE,
                              high DOUBLE,

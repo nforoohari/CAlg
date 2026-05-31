@@ -1,10 +1,13 @@
-package api;
+package api.daos;
+
+import api.enums.Currency;
 
 import java.util.Date;
 
-public class CryptoRecord {
+public class Record {
 
-    private Crypto crypto;
+    private long id;
+    private Currency currency;
     private final Date date;
     private final double open;
     private final double high;
@@ -12,9 +15,10 @@ public class CryptoRecord {
     private final double close;
     private final double volume;
 
-    public CryptoRecord(Crypto crypto, Date date, double open, double high,
-                        double low, double close, double volume) {
-        this.crypto = crypto;
+    public Record(long id, Currency currency, Date date, double open, double high,
+                  double low, double close, double volume) {
+        this.id = id;
+        this.currency = currency;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -23,9 +27,9 @@ public class CryptoRecord {
         this.volume = volume;
     }
 
-    public CryptoRecord(Date date, double open, double high,
-                        double low, double close, double volume) {
-        this.crypto = Crypto.SAM;
+    public Record(Currency currency, Date date, double open, double high,
+                  double low, double close, double volume) {
+        this.currency = currency;
         this.date = date;
         this.open = open;
         this.high = high;
@@ -34,8 +38,20 @@ public class CryptoRecord {
         this.volume = volume;
     }
 
-    public Crypto getCrypto() {
-        return crypto;
+    public Record(Date date, double open, double high,
+                  double low, double close, double volume) {
+        this.date = date;
+        this.open = open;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.volume = volume;
+    }
+
+    public long getId() { return id; }
+
+    public Currency getCryptoCurrency() {
+        return currency;
     }
 
     public Date getDate() {
@@ -62,14 +78,16 @@ public class CryptoRecord {
         return volume;
     }
 
-    public void setCrypto(Crypto crypto) {
-        this.crypto = crypto;
+    public void setId(long id) { this.id = id; }
+
+    public void setCrypto(Currency currency) {
+        this.currency = currency;
     }
 
     @Override
     public String toString() {
-        return "CryptoRecord{" +
-                "crypto=" + crypto.getName() +
+        return "Record{" +
+                "currency=" + currency.getName() +
                 ", date='" + date + '\'' +
                 ", open=" + open +
                 ", high=" + high +

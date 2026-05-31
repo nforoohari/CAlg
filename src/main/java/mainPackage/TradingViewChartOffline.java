@@ -90,7 +90,7 @@ public class TradingViewChartOffline extends Application {
 //
 //public class TradingViewChartOffline extends Application {
 //
-//    public static List<CryptoRecord> candles;
+//    public static List<Record> candles;
 //
 //    @Override
 //    public void start(Stage stage) {
@@ -121,19 +121,19 @@ public class TradingViewChartOffline extends Application {
 //        stage.show();
 //    }
 //
-//    public static void show(List<CryptoRecord> data) {
+//    public static void show(List<Record> data) {
 //        candles = data;
 //        launch();
 //    }
 //
 //    // تبدیل دیتا به JSON برای JS
-//    private String buildData(List<CryptoRecord> candles) {
+//    private String buildData(List<Record> candles) {
 //
 //        StringBuilder dataJs = new StringBuilder("[");
 //
 //        for (int i = 0; i < candles.size(); i++) {
 //
-//            CryptoRecord c = candles.get(i);
+//            Record c = candles.get(i);
 //
 //            long time = c.getDate().getTime() / 1000;
 //

@@ -1,4 +1,4 @@
-package api;
+package api.daos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

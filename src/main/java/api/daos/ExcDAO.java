@@ -1,4 +1,6 @@
-package api;
+package api.daos;
+
+import api.enums.Currency;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,14 +11,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBLoader {
+public class ExcDAO {
 
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZoneId tehranZone = ZoneId.of("Asia/Tehran");
 
 
-    public static List<CryptoRecord> load(String tableName, Crypto crypto, String startTime, String endTime) throws Exception {
+    public static List<Record> load(String tableName, Currency currency, String startTime, String endTime) throws Exception {
 
         LocalDateTime startDate = LocalDateTime.parse(startTime, formatter);
         LocalDateTime endDate = LocalDateTime.parse(endTime, formatter);
@@ -29,7 +31,7 @@ public class DBLoader {
 
         Connection conn = DB.getConnection();
 
-        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + crypto.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
+        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + currency.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
 
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -38,12 +40,12 @@ public class DBLoader {
 
         ResultSet rs = ps.executeQuery();
 
-        List<CryptoRecord> list = new ArrayList<>();
+        List<Record> list = new ArrayList<>();
 
         while (rs.next()) {
 
-            list.add(new CryptoRecord(
-                    Crypto.fromCode(rs.getLong("crypto")),
+            list.add(new Record(
+                    Currency.fromCode(rs.getLong("currency")),
                     rs.getTimestamp("interval_date"),
                     rs.getDouble("open"),
                     rs.getDouble("high"),
