@@ -68,7 +68,7 @@ public class Main {
 //        //Showing
 //
 //        List<Record> candles =
-//                ExcDAO.load("crypto_hour",Currency.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
+//                RecordDao.load("crypto_hour",Currency.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
 //        TradingViewChartOffline.show(candles);
 //        CandleChart.show(candles);
 

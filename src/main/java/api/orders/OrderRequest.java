@@ -36,20 +36,12 @@ public class OrderRequest {
         this.price = price;
     }
 
-    public OrderState getOrderStatus() {
-        return this.state;
+    public long getId() {
+        return id;
     }
 
-    public void setOrderStatus(OrderState orderState) {
-        this.state = orderState;
-    }
-
-    public List<OrderTransaction> getTransactions() {
-        return this.transactions;
-    }
-
-    public void setTransactions(List<OrderTransaction> transactions) {
-        this.transactions = transactions;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Exchange getExchange() {
@@ -106,5 +98,21 @@ public class OrderRequest {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public OrderState getState() {
+        return state;
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
+    }
+
+    public List<OrderTransaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<OrderTransaction> transactions) {
+        this.transactions = transactions;
     }
 }

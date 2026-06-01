@@ -1,6 +1,7 @@
 package api.daos;
 
 import api.enums.Currency;
+import api.enums.Interval;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,14 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExcDAO {
+public class RecordDao {
 
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZoneId tehranZone = ZoneId.of("Asia/Tehran");
 
-
-    public static List<Record> load(String tableName, Currency currency, String startTime, String endTime) throws Exception {
+    public static List<Record> load(Interval interval, Currency currency, String startTime, String endTime) throws Exception {
 
         LocalDateTime startDate = LocalDateTime.parse(startTime, formatter);
         LocalDateTime endDate = LocalDateTime.parse(endTime, formatter);
@@ -31,12 +31,13 @@ public class ExcDAO {
 
         Connection conn = DB.getConnection();
 
-        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + currency.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
-
+        String sql = "SELECT * FROM ? WHERE (currency = ?) AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
         PreparedStatement ps = conn.prepareStatement(sql);
 
-        ps.setTimestamp(1, new java.sql.Timestamp(startMs));
-        ps.setTimestamp(2, new java.sql.Timestamp(endMs));
+        ps.setString(1, interval.getTableName());
+        ps.setInt(2, currency.getCode());
+        ps.setTimestamp(3, new java.sql.Timestamp(startMs));
+        ps.setTimestamp(4, new java.sql.Timestamp(endMs));
 
         ResultSet rs = ps.executeQuery();
 
@@ -45,7 +46,8 @@ public class ExcDAO {
         while (rs.next()) {
 
             list.add(new Record(
-                    Currency.fromCode(rs.getLong("currency")),
+                    rs.getLong("id"),
+                    Currency.fromCode(rs.getInt("currency")),
                     rs.getTimestamp("interval_date"),
                     rs.getDouble("open"),
                     rs.getDouble("high"),

@@ -3,7 +3,6 @@ package api.exchanges;
 import api.daos.Record;
 import api.enums.Currency;
 import api.enums.Interval;
-import api.daos.OrderDAO;
 import api.orders.OrderRequest;
 import api.orders.OrderState;
 import api.orders.OrderTransaction;

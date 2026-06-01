@@ -1,8 +1,8 @@
 CREATE
-DATABASE crypto;
+    DATABASE crypto;
 
 USE
-crypto;
+    crypto;
 
 CREATE TABLE crypto_day
 (
@@ -14,7 +14,7 @@ CREATE TABLE crypto_day
     low           DECIMAL(20, 8),
     close         DECIMAL(20, 8),
     volume        DECIMAL(20, 8),
-    INDEX         idx_time (interval_date)
+    INDEX idx_time (interval_date)
 );
 
 CREATE TABLE crypto_hour
@@ -27,7 +27,7 @@ CREATE TABLE crypto_hour
     low           DECIMAL(20, 8),
     close         DECIMAL(20, 8),
     volume        DECIMAL(20, 8),
-    INDEX         idx_time (interval_date)
+    INDEX idx_time (interval_date)
 );
 
 CREATE TABLE crypto_minute
@@ -40,7 +40,7 @@ CREATE TABLE crypto_minute
     low           DECIMAL(20, 8),
     close         DECIMAL(20, 8),
     volume        DECIMAL(20, 8),
-    INDEX         idx_time (interval_date)
+    INDEX idx_time (interval_date)
 );
 
 CREATE TABLE crypto_second
@@ -53,7 +53,7 @@ CREATE TABLE crypto_second
     low           DECIMAL(20, 8),
     close         DECIMAL(20, 8),
     volume        DECIMAL(20, 8),
-    INDEX         idx_time (interval_date)
+    INDEX idx_time (interval_date)
 );
 
 CREATE TABLE order_request
@@ -66,7 +66,7 @@ CREATE TABLE order_request
     price        DECIMAL(20, 8) NOT NULL,
     fee          DECIMAL(20, 8) NOT NULL,
     request_date datetime,
-    INDEX        idx_time(request_date),
+    INDEX idx_time (request_date)
 );
 
 CREATE TABLE order_state
@@ -80,7 +80,7 @@ CREATE TABLE order_state
     payedFee    DECIMAL(20, 8) NOT NULL,
     status      INTEGER        NOT NULL,
     status_date datetime,
-    INDEX       idx_time(order_date),
+    INDEX idx_time (order_date),
     CONSTRAINT fk_state FOREIGN KEY (request_id) REFERENCES order_request (id) ON DELETE CASCADE
 );
 
@@ -96,7 +96,7 @@ CREATE TABLE order_transaction
     payedFee         DECIMAL(20, 8) NOT NULL,
     balance          DECIMAL(20, 8) NOT NULL,
     transaction_date datetime,
-    INDEX            idx_time(transaction_date),
+    INDEX idx_time (transaction_date),
     CONSTRAINT fk_transaction FOREIGN KEY (request_id) REFERENCES order_request (id) ON DELETE CASCADE
 );
 
@@ -108,7 +108,7 @@ CREATE TABLE trader
     fee         DECIMAL(20, 8) NOT NULL,
     interval    INTEGER        NOT NULL,
     trader_date datetime,
-    INDEX       idx_time(trader_date),
+    INDEX idx_time (trader_date)
 );
 
 CREATE TABLE trader_state
@@ -119,21 +119,21 @@ CREATE TABLE trader_state
     volume     DECIMAL(20, 8) NOT NULL,
     balance    DECIMAL(20, 8) NOT NULL,
     payedFee   DECIMAL(20, 8) NOT NULL,
-    INDEX      idx_time(state_date),
+    INDEX idx_time (state_date),
     CONSTRAINT fk_trader_state FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
 );
 
 CREATE TABLE trader_settings
 (
-    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
-    trader_id      BIGINT         NOT NULL,
-    settings_date  datetime,
-    thresholdPrice DECIMAL(20, 8) NOT NULL,
-    stopLoss       DECIMAL(20, 8) NOT NULL,
-    delta          DECIMAL(20, 8) NOT NULL,
-    deltaPrice     DECIMAL(20, 8) NOT NULL,
-    ascending      DECIMAL(20, 8) NOT NULL,
-    ascendingPrice DECIMAL(20, 8) NOT NULL,
-    INDEX          idx_time(settings_date),
+    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trader_id         BIGINT         NOT NULL,
+    settings_date     datetime,
+    threshold_price   DECIMAL(20, 8) NOT NULL,
+    stop_loss         DECIMAL(20, 8) NOT NULL,
+    delta_percent     DECIMAL(20, 8) NOT NULL,
+    delta_price       DECIMAL(20, 8) NOT NULL,
+    ascending_percent DECIMAL(20, 8) NOT NULL,
+    ascending_price   DECIMAL(20, 8) NOT NULL,
+    INDEX idx_time (settings_date),
     CONSTRAINT fk_trader_settings FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
 );

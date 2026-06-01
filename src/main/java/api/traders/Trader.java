@@ -1,16 +1,16 @@
 package api.traders;
 
 import api.enums.Currency;
+import api.enums.Exchange;
 import api.enums.Interval;
 import api.enums.Side;
-import api.exchanges.IExc;
 
 import java.util.Date;
 
-public abstract class Trader extends Thread {
+public class Trader extends Thread {
 
     private long id;
-    private IExc exchange;
+    private Exchange exchange;
     private Currency currency;
     private double fee;
     private Interval interval;
@@ -18,7 +18,6 @@ public abstract class Trader extends Thread {
 
     private TraderState traderState;
     private TraderSettings traderSettings;
-
 
     private ApplySettings applySettings;
     private SubmitRequest submitRequest;
@@ -28,14 +27,10 @@ public abstract class Trader extends Thread {
     private boolean isRunning;
     private long sleepTime;
 
-    public Trader(Currency currency, IExc exchange) {
-        this.currency = currency;
-        this.exchange = exchange;
-
-        initialize();
+    public Trader() {
     }
 
-    private void initialize() {
+    private void init() {
     }
 
     public void run() {
@@ -84,7 +79,7 @@ public abstract class Trader extends Thread {
         System.out.println("Trading result at : " + new Date());
     }
 
-    protected abstract void changeSettings();
+    protected void changeSettings(){}
 
     private void trade() throws Exception {
 
@@ -127,5 +122,68 @@ public abstract class Trader extends Thread {
     private void sellAction() {
     }
 
+    @Override
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Exchange getExchange() {
+        return exchange;
+    }
+
+    public void setExchange(Exchange exchange) {
+        this.exchange = exchange;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public double getFee() {
+        return fee;
+    }
+
+    public void setFee(double fee) {
+        this.fee = fee;
+    }
+
+    public Interval getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Interval interval) {
+        this.interval = interval;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public TraderState getTraderState() {
+        return traderState;
+    }
+
+    public void setTraderState(TraderState traderState) {
+        this.traderState = traderState;
+    }
+
+    public TraderSettings getTraderSettings() {
+        return traderSettings;
+    }
+
+    public void setTraderSettings(TraderSettings traderSettings) {
+        this.traderSettings = traderSettings;
+    }
 }

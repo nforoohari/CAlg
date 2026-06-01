@@ -18,7 +18,6 @@ public class OrderTransaction {
     private Date date;
 
     public OrderTransaction() {
-
     }
 
     public long getId() {
@@ -44,7 +43,6 @@ public class OrderTransaction {
     public void setOrderId(long orderId) {
         this.orderId = orderId;
     }
-
 
     public Side getSide() {
         return side;

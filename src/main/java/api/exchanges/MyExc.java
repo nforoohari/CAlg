@@ -1,10 +1,9 @@
 package api.exchanges;
 
 import api.daos.Record;
-import api.daos.ExcDAO;
+import api.daos.RecordDao;
 import api.enums.Currency;
 import api.enums.Interval;
-import api.daos.OrderDAO;
 import api.orders.OrderRequest;
 import api.orders.OrderState;
 import api.orders.OrderTransaction;
@@ -30,7 +29,7 @@ public class MyExc implements IExc {
         this.startTime = startTime;
         this.endTime = endTime;
 
-        this.lcr = ExcDAO.load(interval.getTableName(), currency, startTime, endTime);
+        this.lcr = RecordDao.load(interval.getTableName(), currency, startTime, endTime);
         this.lcrSize = lcr.size();
         this.cnt = 0;
 

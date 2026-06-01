@@ -8,12 +8,12 @@ public class Record {
 
     private long id;
     private Currency currency;
-    private final Date date;
-    private final double open;
-    private final double high;
-    private final double low;
-    private final double close;
-    private final double volume;
+    private Date date;
+    private double open;
+    private double high;
+    private double low;
+    private double close;
+    private double volume;
 
     public Record(long id, Currency currency, Date date, double open, double high,
                   double low, double close, double volume) {
@@ -48,46 +48,75 @@ public class Record {
         this.volume = volume;
     }
 
-    public long getId() { return id; }
+    public long getId() {
+        return id;
+    }
 
-    public Currency getCryptoCurrency() {
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Currency getCurrency() {
         return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     public Date getDate() {
         return date;
     }
 
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public double getOpen() {
         return open;
+    }
+
+    public void setOpen(double open) {
+        this.open = open;
     }
 
     public double getHigh() {
         return high;
     }
 
+    public void setHigh(double high) {
+        this.high = high;
+    }
+
     public double getLow() {
         return low;
+    }
+
+    public void setLow(double low) {
+        this.low = low;
     }
 
     public double getClose() {
         return close;
     }
 
+    public void setClose(double close) {
+        this.close = close;
+    }
+
     public double getVolume() {
         return volume;
     }
 
-    public void setId(long id) { this.id = id; }
-
-    public void setCrypto(Currency currency) {
-        this.currency = currency;
+    public void setVolume(double volume) {
+        this.volume = volume;
     }
 
     @Override
     public String toString() {
         return "Record{" +
-                "currency=" + currency.getName() +
+                "id=" + id +
+                ", currency=" + currency.getName() +
                 ", date='" + date + '\'' +
                 ", open=" + open +
                 ", high=" + high +
