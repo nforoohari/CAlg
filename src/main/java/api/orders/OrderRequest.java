@@ -23,17 +23,18 @@ public class OrderRequest {
     private List<OrderTransaction> transactions;
 
     public OrderRequest() {
-        this.transactions = new ArrayList<>();
-        this.date = new Date();
     }
 
-    public OrderRequest(Currency currency, Side side, double capital, double price) {
-        this.transactions = new ArrayList<>();
-        this.date = new Date();
+    public OrderRequest(Exchange exchange, Currency currency, Side side, double capital, double price, double fee) {
+        this.exchange = exchange;
         this.currency = currency;
         this.side = side;
         this.capital = capital;
         this.price = price;
+        this.fee = fee;
+        this.date = new Date();
+        this.state = new OrderState(side, capital);
+        this.transactions = new ArrayList<>();
     }
 
     public long getId() {

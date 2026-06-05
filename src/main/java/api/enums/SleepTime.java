@@ -10,5 +10,8 @@ public enum SleepTime {
     SleepTime(long millis) {
         this.millis = millis;
     }
+    public long getMillis() {
+        return millis;
+    }
 
 }

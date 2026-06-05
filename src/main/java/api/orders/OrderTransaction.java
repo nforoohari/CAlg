@@ -20,6 +20,11 @@ public class OrderTransaction {
     public OrderTransaction() {
     }
 
+    public OrderTransaction(long requestId, long orderId) {
+        this.requestId = requestId;
+        this.orderId = orderId;
+    }
+
     public long getId() {
         return id;
     }

@@ -1,9 +1,15 @@
 package api.traders;
 
+import api.daos.Record;
 import api.enums.Currency;
 import api.enums.Exchange;
 import api.enums.Interval;
 import api.enums.Side;
+import api.exchanges.NonOprBinance;
+import api.exchanges.OprBinance;
+import api.exchanges.IExc;
+import api.exchanges.MyExc;
+import api.orders.OrderRequest;
 
 import java.util.Date;
 
@@ -15,6 +21,8 @@ public class Trader extends Thread {
     private double fee;
     private Interval interval;
     private Date date;
+    private String startTime;
+    private String endTime;
 
     private TraderState traderState;
     private TraderSettings traderSettings;
@@ -22,15 +30,49 @@ public class Trader extends Thread {
     private ApplySettings applySettings;
     private SubmitRequest submitRequest;
 
+    private IExc iExc;
     private boolean isInitialState;
     private Side currentSide;
     private boolean isRunning;
     private long sleepTime;
+    private Record record;
 
     public Trader() {
     }
 
-    private void init() {
+    public Trader(Exchange exchange, double fee, Interval interval, Currency currency) throws Exception {
+        this.exchange = exchange;
+        this.fee = fee;
+        this.interval = interval;
+        this.currency = currency;
+        this.startTime = "";
+        this.endTime = "";
+
+        this.date = new Date();
+        init();
+    }
+
+    public Trader(Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
+        this.exchange = exchange;
+        this.fee = fee;
+        this.interval = interval;
+        this.currency = currency;
+        this.startTime = startTime;
+        this.endTime = endTime;
+
+        this.date = new Date();
+        init();
+    }
+
+
+    private void init() throws Exception {
+
+        assert exchange != null;
+        iExc = switch (exchange) {
+            case MyExc -> new MyExc(exchange, fee, interval, currency, startTime, endTime);
+            case Binance_MainNet_NonOpr, Binance_TestNet_NonOpr -> new NonOprBinance(exchange, fee, interval, currency);
+            case Binance_MainNet_Opr, Binance_TestNet_Opr -> new OprBinance(exchange, fee, interval, currency);
+        };
     }
 
     public void run() {
@@ -79,7 +121,8 @@ public class Trader extends Thread {
         System.out.println("Trading result at : " + new Date());
     }
 
-    protected void changeSettings(){}
+    protected void changeSettings() {
+    }
 
     private void trade() throws Exception {
 
@@ -90,9 +133,9 @@ public class Trader extends Thread {
 
     private void stepTrade() throws Exception {
         while (isRunning) {
-            exchange.fetchExcData(currency, interval.getName());
-            if (applySettings.apply()) {
-                submitRequest.submit();
+            record = iExc.fetchExcData(currency);
+            if (applySettings.apply(record)) {
+                submitRequest.submit(new OrderRequest());
                 break;
             }
         }
@@ -100,7 +143,7 @@ public class Trader extends Thread {
 
     private void swapSide() {
         currentSide = (currentSide == Side.SELL) ? Side.BUY : Side.SELL;
-        applySettings = (currentSide == Side.SELL) ? this::buyCheck : this::sellCheck;
+        applySettings = (currentSide == Side.SELL) ? (Record record) -> buyCheck() : (Record record) -> sellCheck();
         submitRequest = (currentSide == Side.SELL) ? this::buyAction : this::sellAction;
     }
 
@@ -116,10 +159,10 @@ public class Trader extends Thread {
         return true;
     }
 
-    private void buyAction() {
+    private void buyAction(OrderRequest orderRequest) {
     }
 
-    private void sellAction() {
+    private void sellAction(OrderRequest orderRequest) {
     }
 
     @Override
@@ -169,6 +212,22 @@ public class Trader extends Thread {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 
     public TraderState getTraderState() {

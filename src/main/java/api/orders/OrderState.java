@@ -1,5 +1,6 @@
 package api.orders;
 
+import api.enums.Side;
 import api.enums.Status;
 
 import java.util.Date;
@@ -17,6 +18,17 @@ public class OrderState {
     private Date statusDate;
 
     public OrderState() {
+    }
+
+    public OrderState(Side side, double capital) {
+
+        this.orderId = 0;
+        this.orderDate = new Date();
+        this.volume = side == Side.BUY ? 0 : capital;
+        this.balance = side == Side.BUY ? capital : 0;
+        this.payedFee = 0;
+        this.status = Status.In_Progress;
+        this.statusDate = new Date();
     }
 
     public long getId() {

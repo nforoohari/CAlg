@@ -2,9 +2,12 @@ package api.daos;
 
 import api.enums.Status;
 import api.orders.OrderState;
+import api.orders.OrderStatus;
+import api.traders.Trader;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class OrderStateDao {
@@ -51,9 +54,43 @@ public class OrderStateDao {
         }
     }
 
-    public static OrderState getById(long id) throws SQLException {
 
-        String sql = "SELECT * FROM order_state WHERE id=?";
+    public static OrderStatus cancel(long orderRequestId) throws SQLException {
+
+        String sql = """
+                UPDATE order_state
+                SET status=?,
+                    status_date=?
+                WHERE request_id=?
+                """;
+
+
+        try (
+                Connection connection = DB.getConnection();
+                PreparedStatement ps =
+                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            OrderStatus newOrderStatus= new OrderStatus(Status.Cancelled, new Date());
+
+            ps.setInt(1, newOrderStatus.getStatus().getCode());
+            ps.setTimestamp(2, new java.sql.Timestamp(newOrderStatus.getStatusDate().getTime()));
+            ps.setLong(3, orderRequestId);
+
+            return ps.executeUpdate() > 0 ? newOrderStatus : null;
+        }
+    }
+
+    public static boolean update(OrderState orderState) throws SQLException {
+
+        String sql = """
+                UPDATE order_state
+                SET volume=?,
+                    balance=?,
+                    payedFee=?,
+                    status=?,
+                    status_date=?
+                WHERE id=?
+                """;
 
         try (
                 Connection connection = DB.getConnection();
@@ -61,7 +98,32 @@ public class OrderStateDao {
                         connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
 
-            ps.setLong(1, id);
+            ps.setDouble(1, orderState.getVolume());
+            ps.setDouble(2, orderState.getBalance());
+            ps.setDouble(3, orderState.getPayedFee());
+            ps.setInt(4, orderState.getStatus().getCode());
+            ps.setTimestamp(5, new java.sql.Timestamp(orderState.getStatusDate().getTime()));
+            ps.setLong(6, orderState.getId());
+
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+
+
+
+
+    public static OrderState getByRequestId(long requestId) throws SQLException {
+
+        String sql = "SELECT * FROM order_state WHERE request_id=?";
+
+        try (
+                Connection connection = DB.getConnection();
+                PreparedStatement ps =
+                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+
+            ps.setLong(1, requestId);
 
             try (ResultSet rs = ps.executeQuery()) {
 
@@ -75,7 +137,7 @@ public class OrderStateDao {
 
     public static List<OrderState> getAll() throws SQLException {
 
-        String sql = "SELECT * FROM order_state ORDER BY id";
+        String sql = "SELECT * FROM order_state ORDER BY request_id";
 
         List<OrderState> result = new ArrayList<>();
 

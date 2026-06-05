@@ -1,39 +1,52 @@
 package api.exchanges;
 
-import api.daos.*;
+import api.daos.OrderRequestDao;
+import api.daos.OrderStateDao;
+import api.daos.OrderTransactionDao;
 import api.daos.Record;
 import api.enums.*;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;
 import api.orders.OrderTransaction;
+import org.json.JSONArray;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MyExc implements IExc {
+public class NonOprBinance implements IExc {
+
+    private static final String MAIN_NET_BASE_URL = "https://api.binance.com";
+
+    private static final String TEST_NET_BASE_URL = "https://testnet.binance.vision";
+
+    private String BASE_URL;
+    private String END_POINT;
 
     private Exchange exchange;
     private double fee;
     private Interval interval;
     private Currency currency;
-    private String startTime;
-    private String endTime;
 
-    private List<Record> lcr;
-    private int lcrSize;
-    private int cnt;
-
-    public MyExc(Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
+    public NonOprBinance(Exchange exchange, double fee, Interval interval, Currency currency) {
         this.exchange = exchange;
         this.fee = fee;
         this.interval = interval;
         this.currency = currency;
-        this.startTime = startTime;
-        this.endTime = endTime;
 
-        this.lcr = RecordDao.load(interval, currency, startTime, endTime);
-        this.lcrSize = lcr.size();
-        this.cnt = 0;
+        switch (exchange) {
+            case Binance_MainNet_NonOpr -> {
+                this.BASE_URL = MAIN_NET_BASE_URL;
+            }
+            case Binance_TestNet_NonOpr -> {
+                this.BASE_URL = TEST_NET_BASE_URL;
+            }
+        }
+        this.END_POINT = this.BASE_URL + "/api/v3/klines?symbol=" + currency.getSymbol() + "&interval=" + interval.getName() + "&limit=2";
     }
 
     @Override
@@ -52,6 +65,7 @@ public class MyExc implements IExc {
         return orderRequest;
     }
 
+
     @Override
     public OrderStatus cancel(long orderRequestId) throws Exception {
         return OrderStateDao.cancel(orderRequestId);
@@ -68,6 +82,7 @@ public class MyExc implements IExc {
         while (n < retryTimes.getValue() && record != null && orderRequest.getState().getStatus() == Status.In_Progress) {
 
             offlineCheckOrderStatus(orderRequest, record);
+            Thread.sleep(interval.getMillis());
             record = fetchExcData();
             n++;
         }
@@ -81,8 +96,35 @@ public class MyExc implements IExc {
 
     @Override
     public Record fetchExcData() throws Exception {
-        return ((cnt < lcrSize) ? lcr.get(cnt++) : null);
+
+        List<Record> records = new ArrayList<>();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(END_POINT)).GET().build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("HTTP Error: " + response.statusCode());
+        }
+
+        // --- دریافت JSON ---
+        JSONArray json = new JSONArray(response.body());
+
+        for (int i = 0; i < json.length(); i++) {
+
+            JSONArray rowJson = json.getJSONArray(i);
+
+            long openTimeMs = rowJson.getLong(0);
+            double open = rowJson.getDouble(1);
+            double high = rowJson.getDouble(2);
+            double low = rowJson.getDouble(3);
+            double close = rowJson.getDouble(4);
+            double volume = rowJson.getDouble(5);
+
+            records.add(new Record(currency, new Date(openTimeMs), open, high, low, close, volume));
+
+        }
+        return records.getFirst();
     }
+
 
     private void offlineCheckOrderStatus(OrderRequest orderRequest, Record record) throws Exception {
 
@@ -184,38 +226,6 @@ public class MyExc implements IExc {
 
         }
 
-    }
-
-    public Interval getInterval() {
-        return interval;
-    }
-
-    public void setInterval(Interval interval) {
-        this.interval = interval;
-    }
-
-    public Currency getCrypto() {
-        return currency;
-    }
-
-    public void setCrypto(Currency currency) {
-        this.currency = currency;
-    }
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
     }
 
 }

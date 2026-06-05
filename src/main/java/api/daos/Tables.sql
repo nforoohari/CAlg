@@ -108,6 +108,8 @@ CREATE TABLE trader
     fee         DECIMAL(20, 8) NOT NULL,
     interval    INTEGER        NOT NULL,
     trader_date datetime,
+    start_time  VARCHAR(100),
+    end_time    VARCHAR(100),
     INDEX idx_time (trader_date)
 );
 

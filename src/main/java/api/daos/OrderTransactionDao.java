@@ -102,6 +102,34 @@ public class OrderTransactionDao {
         return result;
     }
 
+    public static List<OrderTransaction> getByRequestId(long requestId) throws SQLException {
+
+        String sql = """
+                SELECT *
+                FROM order_transaction
+                WHERE request_id = ?
+                ORDER BY id
+                """;
+
+        List<OrderTransaction> result = new ArrayList<>();
+
+        try (
+                Connection connection = DB.getConnection();
+                PreparedStatement ps =
+                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        ) {
+
+            ps.setLong(1, requestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(map(rs));
+                }
+            }
+        }
+
+        return result;
+    }
+
     private static OrderTransaction map(ResultSet rs) throws SQLException {
 
         OrderTransaction e = new OrderTransaction();

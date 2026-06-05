@@ -3,7 +3,11 @@ package api.enums;
 public enum Exchange {
 
     MyExc(0, "MyExc"),
-    Binance(1, "Binance");
+    Binance_TestNet_NonOpr(1, "Binance_TestNet_NonOpr"),
+    Binance_TestNet_Opr(2, "Binance_TestNet_Opr"),
+    Binance_MainNet_NonOpr(3, "Binance_MainNet_NonOpr"),
+    Binance_MainNet_Opr(4, "Binance_MainNet_Opr");
+
 
     private final int code;
     private final String name;

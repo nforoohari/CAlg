@@ -15,8 +15,8 @@ public class TraderDao {
 
         String sql = """
                 INSERT INTO trader
-                (exchange, currency, fee, interval, trader_date)
-                VALUES (?, ?, ?, ?, ?)
+                (exchange, currency, fee, interval, trader_date, start_time, end_time)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -29,7 +29,8 @@ public class TraderDao {
             ps.setDouble(3, trader.getFee());
             ps.setInt(4, trader.getInterval().getCode());
             ps.setTimestamp(5, new java.sql.Timestamp(trader.getDate().getTime()));
-
+            ps.setString(6, trader.getStartTime());
+            ps.setString(7, trader.getEndTime());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -48,7 +49,9 @@ public class TraderDao {
                     currency=?,
                     fee=?,
                     interval=?,
-                    trader_date=?
+                    trader_date=?,
+                    start_time=?,
+                    end_time=?
                 WHERE id=?
                 """;
 
@@ -62,8 +65,10 @@ public class TraderDao {
             ps.setDouble(3, trader.getFee());
             ps.setInt(4, trader.getInterval().getCode());
             ps.setTimestamp(5, new java.sql.Timestamp(trader.getDate().getTime()));
+            ps.setString(6, trader.getStartTime());
+            ps.setString(7, trader.getEndTime());
 
-            ps.setLong(6, trader.getId());
+            ps.setLong(8, trader.getId());
 
             return ps.executeUpdate() > 0;
         }
@@ -139,6 +144,8 @@ public class TraderDao {
         trader.setFee(rs.getDouble("fee"));
         trader.setInterval(Interval.fromCode(rs.getInt("interval")));
         trader.setDate(rs.getTimestamp("trader_date"));
+        trader.setStartTime(rs.getString("start_time"));
+        trader.setEndTime(rs.getString("end_time"));
 
         return trader;
     }
