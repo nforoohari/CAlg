@@ -9,24 +9,29 @@ public class TraderSettings {
     private Date date;
 
     public double thresholdPrice;
+    public double stopLossPercent;
     public double stopLoss;
     public double deltaPercent;
-    public double deltaPrice;
+    public double delta;
     public double ascendingPercent;
-    public double ascendingPrice;
+    public double ascending;
+    public boolean topFix;
+    public boolean bottomFix;
 
     public TraderSettings() {
     }
 
-    public TraderSettings(double thresholdPrice, double stopLoss, double deltaPercent, double ascendingPercent) {
+    public TraderSettings(double thresholdPrice, double stopLossPercent, double deltaPercent, double ascendingPercent, boolean topFix, boolean bottomFix) {
 
         this.thresholdPrice = thresholdPrice;
-        this.stopLoss = stopLoss;
+        this.stopLossPercent = stopLossPercent;
+        this.stopLoss = thresholdPrice * stopLossPercent / 100;
         this.deltaPercent = deltaPercent;
-        this.deltaPrice = this.deltaPercent * thresholdPrice / 100;
+        this.delta = thresholdPrice * deltaPercent / 100;
         this.ascendingPercent = ascendingPercent;
-        this.ascendingPrice = this.ascendingPercent * thresholdPrice / 100;
-
+        this.ascending = thresholdPrice * ascendingPercent / 100;
+        this.topFix = topFix;
+        this.bottomFix = bottomFix;
     }
 
     public long getId() {

@@ -77,6 +77,7 @@ public class NonOprBinance implements IExc {
         int n = 0;
 
         submit(orderRequest);
+        Thread.sleep(interval.getMillis());
         Record record = fetchExcData();
 
         while (n < retryTimes.getValue() && record != null && orderRequest.getState().getStatus() == Status.In_Progress) {

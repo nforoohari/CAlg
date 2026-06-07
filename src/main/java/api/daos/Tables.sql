@@ -131,11 +131,14 @@ CREATE TABLE trader_settings
     trader_id         BIGINT         NOT NULL,
     settings_date     datetime,
     threshold_price   DECIMAL(20, 8) NOT NULL,
+    stop_loss_percent DECIMAL(20, 8) NOT NULL,
     stop_loss         DECIMAL(20, 8) NOT NULL,
     delta_percent     DECIMAL(20, 8) NOT NULL,
-    delta_price       DECIMAL(20, 8) NOT NULL,
+    delta             DECIMAL(20, 8) NOT NULL,
     ascending_percent DECIMAL(20, 8) NOT NULL,
-    ascending_price   DECIMAL(20, 8) NOT NULL,
+    ascending         DECIMAL(20, 8) NOT NULL,
+    top_fix           BOOLEAN,
+    bottom_fix        BOOLEAN,
     INDEX idx_time (settings_date),
     CONSTRAINT fk_trader_settings FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
 );

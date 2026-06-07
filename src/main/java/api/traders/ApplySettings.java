@@ -1,8 +1,9 @@
 package api.traders;
 
 import api.daos.Record;
+import api.orders.OrderRequest;
 
 @FunctionalInterface
 public interface ApplySettings {
-    boolean apply(Record record);
+    OrderRequest apply(Record record);
 }

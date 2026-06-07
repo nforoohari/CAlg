@@ -16,13 +16,16 @@ public class TraderSettingsDao {
                     trader_id,
                     settings_date,
                     threshold_price,
+                    stop_loss_percent,
                     stop_loss,
                     delta_percent,
-                    delta_price,
+                    delta,
                     ascending_percent,
-                    ascending_price
+                    ascending,
+                    top_fix,
+                    bottom_fix
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
                 """;
 
         try (
@@ -34,11 +37,14 @@ public class TraderSettingsDao {
             ps.setLong(1, settings.getTraderId());
             ps.setTimestamp(2, new java.sql.Timestamp(settings.getDate().getTime()));
             ps.setDouble(3, settings.thresholdPrice);
-            ps.setDouble(4, settings.stopLoss);
-            ps.setDouble(5, settings.deltaPercent);
-            ps.setDouble(6, settings.deltaPrice);
-            ps.setDouble(7, settings.ascendingPercent);
-            ps.setDouble(8, settings.ascendingPrice);
+            ps.setDouble(4, settings.stopLossPercent);
+            ps.setDouble(5, settings.stopLoss);
+            ps.setDouble(6, settings.deltaPercent);
+            ps.setDouble(7, settings.delta);
+            ps.setDouble(8, settings.ascendingPercent);
+            ps.setDouble(9, settings.ascending);
+            ps.setBoolean(10, settings.topFix);
+            ps.setBoolean(11, settings.bottomFix);
 
             ps.executeUpdate();
 
@@ -66,7 +72,52 @@ public class TraderSettingsDao {
         }
     }
 
-    public static TraderSettings findByTraderId(long traderId) throws SQLException {
+    public static TraderSettings findFirstByTraderId(long traderId) throws SQLException {
+
+        String sql = """
+                SELECT *
+                FROM trader_settings
+                WHERE trader_id=?
+                ORDER BY settings_date ASC
+                LIMIT 1
+                """;
+
+        try (
+                Connection connection = DB.getConnection();
+                PreparedStatement ps =
+                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+
+            ps.setLong(1, traderId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    TraderSettings settings = new TraderSettings();
+
+                    settings.setId(rs.getLong(1));
+                    settings.setTraderId(rs.getLong(2));
+                    settings.setDate(rs.getTimestamp(3));
+                    settings.thresholdPrice = rs.getDouble("threshold_price");
+                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
+                    settings.stopLoss = rs.getDouble("stop_loss");
+                    settings.deltaPercent = rs.getDouble("delta_percent");
+                    settings.delta = rs.getDouble("delta");
+                    settings.ascendingPercent = rs.getDouble("ascending_percent");
+                    settings.ascending = rs.getDouble("ascending");
+                    settings.topFix = rs.getBoolean("top_fix");
+                    settings.bottomFix = rs.getBoolean("bottom_fix");
+
+                    return settings;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static TraderSettings findLastByTraderId(long traderId) throws SQLException {
 
         String sql = """
                 SELECT *
@@ -94,11 +145,14 @@ public class TraderSettingsDao {
                     settings.setTraderId(rs.getLong(2));
                     settings.setDate(rs.getTimestamp(3));
                     settings.thresholdPrice = rs.getDouble("threshold_price");
+                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
                     settings.stopLoss = rs.getDouble("stop_loss");
                     settings.deltaPercent = rs.getDouble("delta_percent");
-                    settings.deltaPrice = rs.getDouble("delta_price");
+                    settings.delta = rs.getDouble("delta");
                     settings.ascendingPercent = rs.getDouble("ascending_percent");
-                    settings.ascendingPrice = rs.getDouble("ascending_price");
+                    settings.ascending = rs.getDouble("ascending");
+                    settings.topFix = rs.getBoolean("top_fix");
+                    settings.bottomFix = rs.getBoolean("bottom_fix");
 
                     return settings;
                 }
@@ -137,11 +191,14 @@ public class TraderSettingsDao {
                     settings.setTraderId(rs.getLong(2));
                     settings.setDate(rs.getTimestamp(3));
                     settings.thresholdPrice = rs.getDouble("threshold_price");
+                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
                     settings.stopLoss = rs.getDouble("stop_loss");
                     settings.deltaPercent = rs.getDouble("delta_percent");
-                    settings.deltaPrice = rs.getDouble("delta_price");
+                    settings.delta = rs.getDouble("delta");
                     settings.ascendingPercent = rs.getDouble("ascending_percent");
-                    settings.ascendingPrice = rs.getDouble("ascending_price");
+                    settings.ascending = rs.getDouble("ascending");
+                    settings.topFix = rs.getBoolean("top_fix");
+                    settings.bottomFix = rs.getBoolean("bottom_fix");
 
                     list.add(settings);
                 }

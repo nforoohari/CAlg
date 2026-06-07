@@ -58,7 +58,46 @@ public class TraderStateDao {
         }
     }
 
-    public static TraderState findByTraderId(long traderId) throws SQLException {
+    public static TraderState findFirstByTraderId(long traderId) throws SQLException {
+
+        String sql = """
+                SELECT *
+                FROM trader_state
+                WHERE trader_id=?
+                ORDER BY state_date ASC
+                LIMIT 1
+                """;
+
+        try (
+                Connection connection = DB.getConnection();
+                PreparedStatement ps =
+                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+
+            ps.setLong(1, traderId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    TraderState state = new TraderState();
+
+                    state.setId(rs.getLong("id"));
+                    state.setTraderId(rs.getLong("trader_id"));
+                    state.setDate(rs.getTimestamp("state_date"));
+                    state.volume = rs.getDouble("volume");
+                    state.balance = rs.getDouble("balance");
+                    state.payedFee = rs.getDouble("payedFee");
+
+                    return state;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static TraderState findLastByTraderId(long traderId) throws SQLException {
 
         String sql = """
                 SELECT *
@@ -96,6 +135,7 @@ public class TraderStateDao {
 
         return null;
     }
+
 
     public static List<TraderState> findAllByTraderId(long traderId) throws SQLException {
 

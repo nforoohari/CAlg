@@ -1,41 +1,40 @@
 package api.traders;
 
 import api.daos.Record;
-import api.enums.Currency;
-import api.enums.Exchange;
-import api.enums.Interval;
-import api.enums.Side;
+import api.daos.TraderDao;
+import api.daos.TraderSettingsDao;
+import api.daos.TraderStateDao;
+import api.enums.*;
 import api.exchanges.NonOprBinance;
 import api.exchanges.OprBinance;
 import api.exchanges.IExc;
 import api.exchanges.MyExc;
 import api.orders.OrderRequest;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Trader extends Thread {
 
     private long id;
     private Exchange exchange;
-    private Currency currency;
     private double fee;
     private Interval interval;
-    private Date date;
+    private Currency currency;
     private String startTime;
     private String endTime;
+    private Date date;
+
+    private IExc iExc;
+    private boolean firstStep;
+    private Side currentSide;
+    private ApplySettings applySettings;
+    private boolean isRunning;
+    private Record record;
 
     private TraderState traderState;
     private TraderSettings traderSettings;
 
-    private ApplySettings applySettings;
-    private SubmitRequest submitRequest;
-
-    private IExc iExc;
-    private boolean isInitialState;
-    private Side currentSide;
-    private boolean isRunning;
-    private long sleepTime;
-    private Record record;
 
     public Trader() {
     }
@@ -47,9 +46,8 @@ public class Trader extends Thread {
         this.currency = currency;
         this.startTime = "";
         this.endTime = "";
-
         this.date = new Date();
-        init();
+        init(Side.BUY);
     }
 
     public Trader(Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
@@ -59,13 +57,12 @@ public class Trader extends Thread {
         this.currency = currency;
         this.startTime = startTime;
         this.endTime = endTime;
-
         this.date = new Date();
-        init();
+        init(Side.BUY);
     }
 
 
-    private void init() throws Exception {
+    protected void init(Side side) throws Exception {
 
         assert exchange != null;
         iExc = switch (exchange) {
@@ -73,6 +70,18 @@ public class Trader extends Thread {
             case Binance_MainNet_NonOpr, Binance_TestNet_NonOpr -> new NonOprBinance(exchange, fee, interval, currency);
             case Binance_MainNet_Opr, Binance_TestNet_Opr -> new OprBinance(exchange, fee, interval, currency);
         };
+        firstStep = true;
+        currentSide = side;
+        applySettings = (side == Side.BUY) ? this::buyCheck : this::sellCheck;
+        isRunning = true;
+        record = null;
+
+        traderState = TraderStateDao.findFirstByTraderId(1);
+        traderSettings = TraderSettingsDao.findFirstByTraderId(1);
+
+        TraderDao.insert(this);
+        traderState.setTraderId(this.getId());
+        traderSettings.setTraderId(this.getId());
     }
 
     public void run() {
@@ -82,7 +91,17 @@ public class Trader extends Thread {
 
             while (isRunning) {
 
+                try {
+                    traderState.setDate(new Date());
+                    traderSettings.setDate(new Date());
+                    TraderStateDao.insert(traderState);
+                    TraderSettingsDao.insert(traderSettings);
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 printAllSettings();
+                printAllState();
 
                 try {
                     trade();
@@ -90,35 +109,65 @@ public class Trader extends Thread {
                     throw new RuntimeException(e);
                 }
 
-                changeSettings();
+                if (isRunning) changeSettings();
             }
 
-            printAllState();
-
             System.out.println("Trading stopped at : " + new Date());
+            System.out.println("The Final State");
+            traderState.setDate(new Date());
+            try {
+                TraderStateDao.insert(traderState);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            printAllState();
+            try {
+                printResult();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     public void printAllSettings() {
-        System.out.println("limitedPrice : " + traderSettings.thresholdPrice);
+        System.out.println("**********************AllSettings********************");
+        System.out.println("thresholdPrice : " + traderSettings.thresholdPrice);
+        System.out.println("stopLossPercent : " + traderSettings.stopLossPercent);
         System.out.println("stopLoss : " + traderSettings.stopLoss);
-        System.out.println("deltaPrice : " + traderSettings.deltaPrice);
-        System.out.println("limitedPrice + deltaPrice : " + (traderSettings.thresholdPrice + traderSettings.deltaPrice));
-        System.out.println("ascendingPrice : " + traderSettings.ascendingPrice);
+        System.out.println("deltaPercent : " + traderSettings.deltaPercent);
+        System.out.println("deltaPrice : " + traderSettings.delta);
+        System.out.println("ascendingPercent : " + traderSettings.ascendingPercent);
+        System.out.println("ascendingPrice : " + traderSettings.ascending);
+        System.out.println();
     }
 
     public void printAllState() {
-        System.out.println("Thread stopped safely at : " + new Date());
-        System.out.println("broughtInAmount : " + (((double) Math.round(initialState.balance * 100)) / 100));
-        System.out.println("soldAmount : " + (((double) Math.round(currentState.balance * 100)) / 100));
-        System.out.println("volume : " + currentState.volume);
-        System.out.println("payedFeeAmount : " + (((double) Math.round(currentState.payedFee * 100)) / 100));
-        System.out.println("((soldAmount / broughtInAmount) - 1) * 100  : " + ((double) Math.round(((currentState.balance / initialState.balance) - 1) * 10000)) / 100);
-        System.out.println("((volume / baseVolume) - 1) * 100  : " + ((double) Math.round(((currentState.volume / initialState.volume) - 1) * 10000)) / 100);
+        System.out.println("***********************AllState*********************");
+        System.out.println("volume : " + traderState.volume);
+        System.out.println("balance : " + traderState.balance);
+        System.out.println("payedFee  : " + traderState.payedFee);
+        System.out.println();
     }
 
-    public void printResult() {
-        System.out.println("Trading result at : " + new Date());
+    public void printResult() throws SQLException {
+
+        TraderState initialState = TraderStateDao.findFirstByTraderId(this.getId());
+        TraderState finalState = traderState;
+
+        System.out.println("************************Result**********************");
+        System.out.println("Initial Volume : " + formatter(initialState.volume) + "  ,  Final Volume : " + formatter(finalState.volume) + "  ,  Ratio: " + ratioMaker(initialState.volume, finalState.volume));
+        System.out.println("Initial Balance : " + formatter(initialState.balance) + "  ,  Final Balance : " + formatter(finalState.balance) + "  ,  Ratio: " + ratioMaker(initialState.balance, finalState.balance));
+        System.out.println("Initial PayedFee : " + formatter(initialState.payedFee) + "  ,  Final PayedFee : " + formatter(finalState.payedFee));
+        System.out.println();
+    }
+
+    private double formatter(double value) {
+        return (((double) Math.round(value * 100)) / 100);
+    }
+
+    private double ratioMaker(double initialValue, double finalValue) {
+        if (initialValue > 0) return formatter(((finalValue / initialValue) - 1) * 100);
+        else return -1;
     }
 
     protected void changeSettings() {
@@ -129,40 +178,83 @@ public class Trader extends Thread {
         stepTrade();
         swapSide();
         stepTrade();
+        swapSide();
     }
 
     private void stepTrade() throws Exception {
+
+        OrderRequest orderRequest = null;
         while (isRunning) {
-            record = iExc.fetchExcData(currency);
-            if (applySettings.apply(record)) {
-                submitRequest.submit(new OrderRequest());
+            if (exchange != Exchange.MyExc) Thread.sleep(interval.getMillis());
+            if ((record = iExc.fetchExcData()) == null) {
+                isRunning = false;
+                break;
+            }
+            if ((orderRequest = applySettings.apply(record)) != null) {
+                iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
+                updateTraderState(orderRequest);
                 break;
             }
         }
     }
 
     private void swapSide() {
+        firstStep = !firstStep;
         currentSide = (currentSide == Side.SELL) ? Side.BUY : Side.SELL;
-        applySettings = (currentSide == Side.SELL) ? (Record record) -> buyCheck() : (Record record) -> sellCheck();
-        submitRequest = (currentSide == Side.SELL) ? this::buyAction : this::sellAction;
+        applySettings = (currentSide == Side.SELL) ? this::buyCheck : this::sellCheck;
     }
 
     public void stopTrading() {
         isRunning = false;
     }
 
-    private boolean buyCheck() {
-        return true;
+    private OrderRequest buyCheck(Record record) {
+
+        if (firstStep) {
+            if (record.getLow() < traderSettings.thresholdPrice)
+                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice);
+        } else {
+            if (record.getLow() < traderSettings.thresholdPrice - traderSettings.delta)
+                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice - traderSettings.delta);
+            else if (record.getHigh() > traderSettings.thresholdPrice + traderSettings.stopLoss)
+                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice + traderSettings.stopLoss);
+        }
+        return null;
     }
 
-    private boolean sellCheck() {
-        return true;
+    private OrderRequest sellCheck(Record record) {
+
+        if (firstStep) {
+            if (record.getHigh() > traderSettings.thresholdPrice)
+                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice);
+        } else {
+            if (record.getHigh() > (traderSettings.thresholdPrice + traderSettings.delta))
+                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice + traderSettings.delta);
+            else if (record.getLow() < traderSettings.thresholdPrice - traderSettings.stopLoss) {
+                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice - traderSettings.stopLoss);
+            }
+        }
+        return null;
     }
 
-    private void buyAction(OrderRequest orderRequest) {
+    private void updateTraderState(OrderRequest orderRequest) {
+
+        Side side = orderRequest.getSide();
+        if (side == Side.BUY) {
+            traderState.balance = orderRequest.getState().getBalance();
+            traderState.payedFee += orderRequest.getState().getPayedFee();
+            traderState.volume += orderRequest.getState().getVolume();
+        } else {
+            traderState.balance += orderRequest.getState().getBalance();
+            traderState.payedFee += orderRequest.getState().getPayedFee();
+            traderState.volume = orderRequest.getState().getVolume();
+        }
+
     }
 
-    private void sellAction(OrderRequest orderRequest) {
+    private OrderRequest createOrderRequest(Side side, double price) {
+        double capital = side == Side.BUY ? traderState.balance : traderState.volume;
+        return new OrderRequest(exchange, currency, side, capital, price, fee);
     }
 
     @Override

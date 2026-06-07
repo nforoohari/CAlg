@@ -2,8 +2,7 @@ package api.enums;
 
 public enum SleepTime {
 
-    Binance(1000),
-    MyExc(1);
+    Binance(1000);
 
     private final long millis;
 
