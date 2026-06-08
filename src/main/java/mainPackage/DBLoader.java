@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ public class DBLoader {
     private static final ZoneId tehranZone = ZoneId.of("Asia/Tehran");
 
 
-    public static List<CryptoRecord> load(String tableName, Crypto crypto, String startTime, String endTime) throws Exception {
+    public static List<Record> load(String tableName, Currency currency, String startTime, String endTime) throws Exception {
 
         LocalDateTime startDate = LocalDateTime.parse(startTime, formatter);
         LocalDateTime endDate = LocalDateTime.parse(endTime, formatter);
@@ -31,7 +30,7 @@ public class DBLoader {
 
         Connection conn = DB.getConnection();
 
-        String sql = "SELECT * FROM " + tableName + " WHERE (crypto = " + crypto.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
+        String sql = "SELECT * FROM " + tableName + " WHERE (currency = " + currency.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
 
         PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -40,12 +39,12 @@ public class DBLoader {
 
         ResultSet rs = ps.executeQuery();
 
-        List<CryptoRecord> list = new ArrayList<>();
+        List<Record> list = new ArrayList<>();
 
         while (rs.next()) {
 
-            list.add(new CryptoRecord(
-                    Crypto.fromCode(rs.getLong("crypto")),
+            list.add(new Record(
+                    Currency.fromCode(rs.getInt("currency")),
                     rs.getTimestamp("interval_date"),
                     rs.getDouble("open"),
                     rs.getDouble("high"),

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DataGather {
 
@@ -14,9 +12,9 @@ public class DataGather {
     private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public DataGather(Crypto crypto) {
+    public DataGather(Currency currency) {
 
-        this.dr = new DataReceiver(crypto);
+        this.dr = new DataReceiver(currency);
     }
 
     public void gather(String interval, String startTime, String endTime) throws IOException, InterruptedException {

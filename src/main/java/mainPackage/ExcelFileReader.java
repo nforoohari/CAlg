@@ -33,12 +33,12 @@ public class ExcelFileReader implements AutoCloseable {
         }
     }
 
-    public CryptoRecord next() throws ParseException {
+    public Record next() throws ParseException {
         if (!rowIterator.hasNext()) return null;
 
         Row row = rowIterator.next();
 
-        return new CryptoRecord(
+        return new Record(
                 df.parse(row.getCell(0).getStringCellValue()),
                 row.getCell(1).getNumericCellValue(),
                 row.getCell(2).getNumericCellValue(),

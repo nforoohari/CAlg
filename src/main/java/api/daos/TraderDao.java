@@ -48,7 +48,7 @@ public class TraderDao {
                 SET exchange=?,
                     currency=?,
                     fee=?,
-                    interval=?,
+                    interval_date=?,
                     trader_date=?,
                     start_time=?,
                     end_time=?
@@ -142,7 +142,7 @@ public class TraderDao {
         trader.setExchange(Exchange.fromCode(rs.getInt("exchange")));
         trader.setCurrency(Currency.fromCode(rs.getInt("currency")));
         trader.setFee(rs.getDouble("fee"));
-        trader.setInterval(Interval.fromCode(rs.getInt("interval")));
+        trader.setInterval(Interval.fromCode(rs.getInt("interval_code")));
         trader.setDate(rs.getTimestamp("trader_date"));
         trader.setStartTime(rs.getString("start_time"));
         trader.setEndTime(rs.getString("end_time"));

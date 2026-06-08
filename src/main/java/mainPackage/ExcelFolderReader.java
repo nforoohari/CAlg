@@ -3,7 +3,6 @@ package mainPackage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class ExcelFolderReader {
 
-    private final Crypto crypto;
+    private final Currency currency;
     private final String interval;
     private final List<Path> sortedFiles;
     private int currentFileIndex = 0;
@@ -21,16 +20,16 @@ public class ExcelFolderReader {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 
-    public ExcelFolderReader(Crypto crypto, String interval,String folderPath) throws IOException {
+    public ExcelFolderReader(Currency currency, String interval, String folderPath) throws IOException {
 
-        this.crypto = crypto;
+        this.currency = currency;
         this.interval=  interval;
 
         // گرفتن همه فایل‌های excel
 //        List<Path> files = Files.list(Paths.get(folderPath))
         List<Path> files = Files.list(Path.of(folderPath))
                 .filter(p -> p.toString().endsWith(".xlsx"))
-                .filter(p -> p.toString().contains(this.crypto.getName()))//this.crypto.getName()
+                .filter(p -> p.toString().contains(this.currency.getName()))//this.currency.getName()
                 .filter(p -> p.toString().contains(this.interval))
                 .toList();
 
@@ -45,7 +44,7 @@ public class ExcelFolderReader {
     private LocalDateTime extractDateTime(Path path) {
         String fileName = path.getFileName().toString()
                 .replace(".xlsx", "")
-                .replace(this.crypto.getName(), "")
+                .replace(this.currency.getName(), "")
                 .replace(this.interval, "")
                 .trim();
         return LocalDateTime.parse(fileName, FORMATTER);
@@ -64,17 +63,17 @@ public class ExcelFolderReader {
         }
     }
 
-    public CryptoRecord next() throws IOException, ParseException {
+    public Record next() throws IOException, ParseException {
 
         if (currentReader == null) return null;
 
-        CryptoRecord record = currentReader.next();
+        Record record = currentReader.next();
 
         if (record == null) {
             openNextFile();
             return next();
         }
-        record.setCrypto(crypto);
+        record.setCurrency(currency);
         return record;
     }
 }

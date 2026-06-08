@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CandleChart {
 
-    public static void show(List<CryptoRecord> candles) {
+    public static void show(List<Record> candles) {
 
         int n = candles.size();
 
@@ -24,7 +24,7 @@ public class CandleChart {
 
         for (int i = 0; i < n; i++) {
 
-            CryptoRecord c = candles.get(i);
+            Record c = candles.get(i);
 
             date[i] = c.getDate();
             high[i] = c.getHigh();
@@ -34,7 +34,7 @@ public class CandleChart {
             volume[i] = c.getVolume();
         }
 
-        String cn = candles.get(0).getCrypto().getName();
+        String cn = candles.get(0).getCurrency().getName();
 //        System.out.println(candles.size());
 
         DefaultHighLowDataset dataset =

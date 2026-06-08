@@ -12,16 +12,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class DataReceiver {
 
-    private Crypto crypto;
+    private Currency currency;
 
     private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -32,16 +30,16 @@ public class DataReceiver {
     // --- آدرس API ---
     private final String url = "https://api.binance.com/api/v3/klines";
 
-    private final String path = "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main\\";
+    private final String path = "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\api\\";
 
-    public DataReceiver(Crypto crypto) {
-        this.crypto = crypto;
+    public DataReceiver(Currency currency) {
+        this.currency = currency;
     }
 
     public void receive(String interval, long startMs , long endMs) throws IOException, InterruptedException {
 
         String fullUrl = url +
-                "?symbol=" + crypto.getName() + "USDT" +
+                "?symbol=" + currency.getName() + "USDT" +
                 "&interval=" + interval +
                 "&startTime=" + startMs +
                 "&endTime=" + endMs +
@@ -67,7 +65,7 @@ public class DataReceiver {
 
         // --- ایجاد فایل Excel ---
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(crypto.getName() + "USDT");
+        Sheet sheet = workbook.createSheet(currency.getName() + "USDT");
 
         // Header
         Row header = sheet.createRow(0);
@@ -120,7 +118,7 @@ public class DataReceiver {
                         .toLocalDateTime();
 
 //        String output = "eth_usdt_last_2years_seconds_utc.xlsx";
-        String output = crypto.getName() + " " + fileDate.format(fileFormatter) + " " + interval + ".xlsx";
+        String output = currency.getName() + " " + fileDate.format(fileFormatter) + " " + interval + ".xlsx";
 
         try (FileOutputStream out = new FileOutputStream(path + output)) {
             workbook.write(out);

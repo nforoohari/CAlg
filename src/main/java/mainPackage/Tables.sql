@@ -102,14 +102,14 @@ CREATE TABLE order_transaction
 
 CREATE TABLE trader
 (
-    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    exchange      INTEGER        NOT NULL,
-    currency      INTEGER        NOT NULL,
-    fee           DECIMAL(20, 8) NOT NULL,
-    interval_code INTEGER        NOT NULL,
-    trader_date   datetime,
-    start_time    VARCHAR(100),
-    end_time      VARCHAR(100),
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    exchange    INTEGER        NOT NULL,
+    currency    INTEGER        NOT NULL,
+    fee         DECIMAL(20, 8) NOT NULL,
+    interval    INTEGER        NOT NULL,
+    trader_date datetime,
+    start_time  VARCHAR(100),
+    end_time    VARCHAR(100),
     INDEX idx_time (trader_date)
 );
 

@@ -50,9 +50,9 @@ public class Main {
 //        paxg.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
 //        paxg.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
-//        //Reading
+        //Reading
 //        ExcelFolderReader reader =
-//                new ExcelFolderReader(Currency.Bitcoin,"1s","C:\\Users\\n_foroohari\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\main");
+//                new ExcelFolderReader(Currency.Bitcoin,"1s","C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\api");
 //
 //        Record record;
 //        DBInserter db = new DBInserter("crypto_second");
@@ -68,7 +68,7 @@ public class Main {
 //        //Showing
 //
 //        List<Record> candles =
-//                RecordDao.load("crypto_hour",Currency.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
+//                DBLoader.load("crypto_second",Currency.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
 //        TradingViewChartOffline.show(candles);
 //        CandleChart.show(candles);
 
