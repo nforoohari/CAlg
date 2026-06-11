@@ -2,17 +2,17 @@ package mainPackage;
 
 public enum Currency {
 
-    Bitcoin(1, "BTC", "BTCUSDT"),
-    Gold(2, "GOLD", "GOLDUSDT"),
-    Silver(3, "SILVER", "SILVERUSDT"),
-    USD(4, "USD", "USDUSDT"),
-    Ethereum(5, "ETH", "ETHUSDT"),
-    Solana(6, "SOL", "SOLUSDT"),
-    Cardano(7, "ADA", "ADAUSDT"),
-    Tron(8, "TRX", "TRXUSDT"),
-    Toncoin(9, "TON", "TONUSDT"),
-    Chainlink(10, "LINK", "LINKUSDT"),
-    BNB(11, "BNB", "BNBUSDT"),;
+    Bitcoin(0, "BTC", "BTCUSDT"),
+    XAUT(1, "XAUT", "XAUTUSDT"),
+    SLVON(2, "SLVON", "SLVONUSDT"),
+    Tether(3, "USDT", ""),
+    Ethereum(4, "ETH", "ETHUSDT"),
+    Solana(5, "SOL", "SOLUSDT"),
+    Cardano(6, "ADA", "ADAUSDT"),
+    Tron(7, "TRX", "TRXUSDT"),
+    Toncoin(8, "TON", "TONUSDT"),
+    Chainlink(9, "LINK", "LINKUSDT"),
+    BNB(10, "BNB", "BNBUSDT");
 
     private final int code;
 

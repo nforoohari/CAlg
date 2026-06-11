@@ -9,53 +9,52 @@ public class Main {
         //Gathering
 
 //        DataGather btc = new DataGather(Currency.Bitcoin);
-//        btc.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        btc.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        btc.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        btc.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        btc.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        btc.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        btc.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        btc.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
 //        DataGather eth = new DataGather(Currency.Ethereum);
-//        eth.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        eth.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        eth.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        eth.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        eth.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        eth.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        eth.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        eth.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
 //        DataGather ton = new DataGather(Currency.Toncoin);
-//        ton.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        ton.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        ton.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        ton.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        ton.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        ton.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        ton.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        ton.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
 //        DataGather sol = new DataGather(Currency.Solana);
-//        sol.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        sol.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        sol.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        sol.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        sol.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        sol.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        sol.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        sol.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 
 //        DataGather link = new DataGather(Currency.Chainlink);
-//        link.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        link.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        link.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        link.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        link.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        link.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        link.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        link.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 
 //        DataGather ada = new DataGather(Currency.Cardano);
-//        ada.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        ada.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        ada.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        ada.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        ada.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        ada.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        ada.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        ada.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
-//        DataGather paxg = new DataGather(Currency.PAXG);
-//        paxg.gather("1d", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        paxg.gather("1h", "2025-01-01 00:00:00", "2025-02-01 00:00:00");
-//        paxg.gather("1m", "2025-01-01 00:00:00", "2025-01-03 00:00:00");
-//        paxg.gather("1s", "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+//        DataGather paxg = new DataGather(Currency.XAUT);
+//        paxg.gather(Interval.OneDay, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        paxg.gather(Interval.OneHour, "2025-01-01 00:00:00", "2025-02-01 00:00:00");
+//        paxg.gather(Interval.OneMinute, "2025-01-01 00:00:00", "2025-01-03 00:00:00");
+//        paxg.gather(Interval.OneSecond, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
 //
-        //Reading
+//        Reading
 //        ExcelFolderReader reader =
-//                new ExcelFolderReader(Currency.Bitcoin,"1s","C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\api");
-//
+//                new ExcelFolderReader(Currency.Bitcoin, Interval.OneSecond, "C:\\Users\\NoteBook\\Desktop\\Mine\\Code\\CAlg\\src\\main\\resources\\api");
 //        Record record;
-//        DBInserter db = new DBInserter("crypto_second");
+//        DBInserter db = new DBInserter(Interval.OneSecond);
 //
 //        while ((record = reader.next()) != null) {
 //            db.batchAddAndInsert(record);
@@ -64,13 +63,12 @@ public class Main {
 //        db.batchAddAndInsert(record);
 //
 //        System.out.println("✅ All files processed.");
-//
-//        //Showing
-//
-//        List<Record> candles =
-//                DBLoader.load("crypto_second",Currency.Bitcoin,"2025-01-01 00:00:00","2025-02-01 04:00:00");
-//        TradingViewChartOffline.show(candles);
-//        CandleChart.show(candles);
+
+        //Showing
+
+        List<Record> candles =
+                DBLoader.load(Interval.OneSecond, Currency.Bitcoin, "2025-01-01 00:00:00", "2025-01-01 01:00:00");
+        TradingViewChartOffline.show(candles);
 
     }
 }

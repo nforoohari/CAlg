@@ -16,8 +16,8 @@ public class TraderStateDao {
 
         String sql = """
                 INSERT INTO trader_state
-                (trader_id, state_date, volume, balance, payedFee)
-                VALUES (?, ?, ?, ?, ?)
+                (trader_id, state_date, volume, balance, payed_fee, stop_loss_enable)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -31,6 +31,7 @@ public class TraderStateDao {
             ps.setDouble(3, state.volume);
             ps.setDouble(4, state.balance);
             ps.setDouble(5, state.payedFee);
+            ps.setBoolean(6,state.stopLossEnable);
 
             ps.executeUpdate();
 
@@ -64,7 +65,7 @@ public class TraderStateDao {
                 SELECT *
                 FROM trader_state
                 WHERE trader_id=?
-                ORDER BY state_date ASC
+                ORDER BY id ASC
                 LIMIT 1
                 """;
 
@@ -87,7 +88,8 @@ public class TraderStateDao {
                     state.setDate(rs.getTimestamp("state_date"));
                     state.volume = rs.getDouble("volume");
                     state.balance = rs.getDouble("balance");
-                    state.payedFee = rs.getDouble("payedFee");
+                    state.payedFee = rs.getDouble("payed_fee");
+                    state.stopLossEnable = rs.getBoolean("stop_loss_enable");
 
                     return state;
                 }
@@ -103,7 +105,7 @@ public class TraderStateDao {
                 SELECT *
                 FROM trader_state
                 WHERE trader_id=?
-                ORDER BY state_date DESC
+                ORDER BY id DESC
                 LIMIT 1
                 """;
 
@@ -126,7 +128,8 @@ public class TraderStateDao {
                     state.setDate(rs.getTimestamp("state_date"));
                     state.volume = rs.getDouble("volume");
                     state.balance = rs.getDouble("balance");
-                    state.payedFee = rs.getDouble("payedFee");
+                    state.payedFee = rs.getDouble("payed_fee");
+                    state.stopLossEnable = rs.getBoolean("stop_loss_enable");
 
                     return state;
                 }
@@ -145,7 +148,7 @@ public class TraderStateDao {
                 SELECT *
                 FROM trader_state
                 WHERE trader_id=?
-                ORDER BY state_date
+                ORDER BY id
                 """;
 
         try (
@@ -167,7 +170,8 @@ public class TraderStateDao {
                     state.setDate(rs.getTimestamp("state_date"));
                     state.volume = rs.getDouble("volume");
                     state.balance = rs.getDouble("balance");
-                    state.payedFee = rs.getDouble("payedFee");
+                    state.payedFee = rs.getDouble("payed_fee");
+                    state.stopLossEnable = rs.getBoolean("stop_loss_enable");
 
                     list.add(state);
                 }

@@ -10,6 +10,7 @@ public class TraderState {
     public double volume;
     public double balance;
     public double payedFee;
+    public boolean stopLossEnable;
 
     public TraderState() {
     }
@@ -18,6 +19,7 @@ public class TraderState {
         this.volume = volume;
         this.balance = balance;
         this.payedFee = payedFee;
+        this.stopLossEnable = false;
     }
 
     public long getId() {

@@ -6,16 +6,15 @@ import java.sql.SQLException;
 
 public class DBInserter {
 
-    private final String tableName;
     private final Connection conn;
     private final String sql;
     private final PreparedStatement ps;
     private int counter;
 
-    public DBInserter(String tableName) throws Exception {
-        this.tableName = tableName;
+    public DBInserter(Interval interval) throws Exception {
+
         this.conn = DB.getConnection();
-        this.sql = "INSERT INTO " + this.tableName + "(currency,interval_date,open,high,low,close,volume) VALUES (?,?,?,?,?,?,?)";
+        this.sql = "INSERT INTO " + interval.getTableName() + "(currency,interval_date,open,high,low,close,volume) VALUES (?,?,?,?,?,?,?)";
         this.ps = conn.prepareStatement(sql);
         this.counter = 0;
     }
@@ -24,8 +23,10 @@ public class DBInserter {
 
         if (counter < 1000 && record != null) {
 
-            ps.setLong(1, record.getCurrency().getCode());
-            ps.setTimestamp(2, new java.sql.Timestamp(record.getDate().getTime()));
+            ps.setInt(1, record.getCurrency().getCode());
+//            ps.setTimestamp(2, new java.sql.Timestamp(record.getDate().getTime()));
+            ps.setTimestamp(2, new java.sql.Timestamp(record.getDate().getTime()),
+                    java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
             ps.setDouble(3, record.getOpen());
             ps.setDouble(4, record.getHigh());
             ps.setDouble(5, record.getLow());

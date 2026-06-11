@@ -56,7 +56,7 @@ public class TradingViewChartOffline extends Application {
 
             Record c = candles.get(i);
 
-            long time = c.getDate().getTime() / 1000;
+            long time = c.getTradingViewDate().getTime() / 1000;
 
             dataJs.append("{")
                     .append("time:").append(time).append(",")

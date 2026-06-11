@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 public class ExcelFolderReader {
 
     private final Currency currency;
-    private final String interval;
+    private final Interval interval;
     private final List<Path> sortedFiles;
     private int currentFileIndex = 0;
     private ExcelFileReader currentReader;
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss");
 
-    public ExcelFolderReader(Currency currency, String interval, String folderPath) throws IOException {
+    public ExcelFolderReader(Currency currency, Interval interval, String folderPath) throws IOException {
 
         this.currency = currency;
         this.interval=  interval;
@@ -29,8 +29,8 @@ public class ExcelFolderReader {
 //        List<Path> files = Files.list(Paths.get(folderPath))
         List<Path> files = Files.list(Path.of(folderPath))
                 .filter(p -> p.toString().endsWith(".xlsx"))
-                .filter(p -> p.toString().contains(this.currency.getName()))//this.currency.getName()
-                .filter(p -> p.toString().contains(this.interval))
+                .filter(p -> p.toString().contains(this.currency.getName()))
+                .filter(p -> p.toString().contains(this.interval.getName()))
                 .toList();
 
         // مرتب‌سازی بر اساس نام فایل (که تاریخ است)
@@ -45,7 +45,7 @@ public class ExcelFolderReader {
         String fileName = path.getFileName().toString()
                 .replace(".xlsx", "")
                 .replace(this.currency.getName(), "")
-                .replace(this.interval, "")
+                .replace(this.interval.getName(), "")
                 .trim();
         return LocalDateTime.parse(fileName, FORMATTER);
     }

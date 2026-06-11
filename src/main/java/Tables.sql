@@ -102,25 +102,26 @@ CREATE TABLE order_transaction
 
 CREATE TABLE trader
 (
-    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
-    exchange    INTEGER        NOT NULL,
-    currency    INTEGER        NOT NULL,
-    fee         DECIMAL(20, 8) NOT NULL,
-    interval    INTEGER        NOT NULL,
-    trader_date datetime,
-    start_time  VARCHAR(100),
-    end_time    VARCHAR(100),
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    exchange      INTEGER        NOT NULL,
+    currency      INTEGER        NOT NULL,
+    fee           DECIMAL(20, 8) NOT NULL,
+    interval_code INTEGER        NOT NULL,
+    trader_date   datetime,
+    start_time    VARCHAR(100),
+    end_time      VARCHAR(100),
     INDEX idx_time (trader_date)
 );
 
 CREATE TABLE trader_state
 (
-    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    trader_id  BIGINT         NOT NULL,
-    state_date datetime,
-    volume     DECIMAL(20, 8) NOT NULL,
-    balance    DECIMAL(20, 8) NOT NULL,
-    payedFee   DECIMAL(20, 8) NOT NULL,
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trader_id        BIGINT         NOT NULL,
+    state_date       datetime,
+    volume           DECIMAL(20, 8) NOT NULL,
+    balance          DECIMAL(20, 8) NOT NULL,
+    payed_fee         DECIMAL(20, 8) NOT NULL,
+    stop_loss_enable BOOLEAN,
     INDEX idx_time (state_date),
     CONSTRAINT fk_trader_state FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
 );

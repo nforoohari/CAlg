@@ -1,6 +1,11 @@
 package mainPackage;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Record {
 
@@ -13,6 +18,11 @@ public class Record {
     private double close;
     private double volume;
 
+    private SimpleDateFormat df;
+
+    private static final DateTimeFormatter formatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public Record(long id, Currency currency, Date date, double open, double high,
                   double low, double close, double volume) {
         this.id = id;
@@ -23,27 +33,20 @@ public class Record {
         this.low = low;
         this.close = close;
         this.volume = volume;
+
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+
     }
 
     public Record(Currency currency, Date date, double open, double high,
                   double low, double close, double volume) {
-        this.currency = currency;
-        this.date = date;
-        this.open = open;
-        this.high = high;
-        this.low = low;
-        this.close = close;
-        this.volume = volume;
+        this(0, currency, date, open, high, low, close, volume);
     }
 
     public Record(Date date, double open, double high,
                   double low, double close, double volume) {
-        this.date = date;
-        this.open = open;
-        this.high = high;
-        this.low = low;
-        this.close = close;
-        this.volume = volume;
+        this(0, null, date, open, high, low, close, volume);
     }
 
     public long getId() {
@@ -115,12 +118,21 @@ public class Record {
         return "Record{" +
                 "id=" + id +
                 ", currency=" + currency.getName() +
-                ", date='" + date + '\'' +
+                ", date='" + df.format(date) + '\'' +
                 ", open=" + open +
                 ", high=" + high +
                 ", low=" + low +
                 ", close=" + close +
                 ", volume=" + volume +
                 '}';
+    }
+
+    public Date getTradingViewDate() {
+
+        String tradingViewStringDate = df.format(date);
+        LocalDateTime tradingViewLocalDate = LocalDateTime.parse(tradingViewStringDate, formatter);
+        long tradingViewMs = tradingViewLocalDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+        return new Date(tradingViewMs);
+
     }
 }

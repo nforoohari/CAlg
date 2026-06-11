@@ -15,7 +15,7 @@ public class TraderDao {
 
         String sql = """
                 INSERT INTO trader
-                (exchange, currency, fee, interval, trader_date, start_time, end_time)
+                (exchange, currency, fee, interval_code, trader_date, start_time, end_time)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -48,7 +48,7 @@ public class TraderDao {
                 SET exchange=?,
                     currency=?,
                     fee=?,
-                    interval_date=?,
+                    interval_code=?,
                     trader_date=?,
                     start_time=?,
                     end_time=?

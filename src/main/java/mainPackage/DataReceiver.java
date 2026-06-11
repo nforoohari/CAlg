@@ -36,11 +36,11 @@ public class DataReceiver {
         this.currency = currency;
     }
 
-    public void receive(String interval, long startMs , long endMs) throws IOException, InterruptedException {
+    public void receive(Interval interval, long startMs , long endMs) throws IOException, InterruptedException {
 
         String fullUrl = url +
-                "?symbol=" + currency.getName() + "USDT" +
-                "&interval=" + interval +
+                "?symbol=" + currency.getSymbol() +
+                "&interval=" + interval.getName() +
                 "&startTime=" + startMs +
                 "&endTime=" + endMs +
                 "&limit=1000";
@@ -65,7 +65,7 @@ public class DataReceiver {
 
         // --- ایجاد فایل Excel ---
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(currency.getName() + "USDT");
+        Sheet sheet = workbook.createSheet(currency.getSymbol());
 
         // Header
         Row header = sheet.createRow(0);
@@ -97,7 +97,6 @@ public class DataReceiver {
 
             Row row = sheet.createRow(rowIndex++);
 
-//            row.createCell(0).setCellValue(date.toString());
             row.createCell(0).setCellValue(date.format(formatter));
             row.createCell(1).setCellValue(open);
             row.createCell(2).setCellValue(high);
@@ -111,14 +110,12 @@ public class DataReceiver {
             sheet.autoSizeColumn(i);
         }
 
-
         LocalDateTime fileDate =
                 Instant.ofEpochMilli(startMs)
                         .atZone(ZoneOffset.UTC)
                         .toLocalDateTime();
 
-//        String output = "eth_usdt_last_2years_seconds_utc.xlsx";
-        String output = currency.getName() + " " + fileDate.format(fileFormatter) + " " + interval + ".xlsx";
+        String output = currency.getName() + " " + fileDate.format(fileFormatter) + " " + interval.getName() + ".xlsx";
 
         try (FileOutputStream out = new FileOutputStream(path + output)) {
             workbook.write(out);
@@ -130,7 +127,4 @@ public class DataReceiver {
 
     }
 
-    public static void main(String[] args) throws Exception {
-
-    }
 }

@@ -76,12 +76,13 @@ public class Trader extends Thread {
         isRunning = true;
         record = null;
 
-        traderState = TraderStateDao.findFirstByTraderId(1);
-        traderSettings = TraderSettingsDao.findFirstByTraderId(1);
-
         TraderDao.insert(this);
-        traderState.setTraderId(this.getId());
-        traderSettings.setTraderId(this.getId());
+
+//        traderState = TraderStateDao.findFirstByTraderId(1);
+//        traderSettings = TraderSettingsDao.findFirstByTraderId(1);
+
+//        traderState.setTraderId(this.getId());
+//        traderSettings.setTraderId(this.getId());
     }
 
     public void run() {
@@ -131,21 +132,21 @@ public class Trader extends Thread {
 
     public void printAllSettings() {
         System.out.println("**********************AllSettings********************");
-        System.out.println("thresholdPrice : " + traderSettings.thresholdPrice);
-        System.out.println("stopLossPercent : " + traderSettings.stopLossPercent);
-        System.out.println("stopLoss : " + traderSettings.stopLoss);
-        System.out.println("deltaPercent : " + traderSettings.deltaPercent);
-        System.out.println("deltaPrice : " + traderSettings.delta);
-        System.out.println("ascendingPercent : " + traderSettings.ascendingPercent);
-        System.out.println("ascendingPrice : " + traderSettings.ascending);
+        System.out.println("thresholdPrice : " + formatter(traderSettings.thresholdPrice));
+        System.out.println("stopLossPercent : " + formatter(traderSettings.stopLossPercent));
+        System.out.println("stopLoss : " + formatter(traderSettings.stopLoss));
+        System.out.println("deltaPercent : " + formatter(traderSettings.deltaPercent));
+        System.out.println("delta : " + formatter(traderSettings.delta));
+        System.out.println("ascendingPercent : " + formatter(traderSettings.ascendingPercent));
+        System.out.println("ascending : " + formatter(traderSettings.ascending));
         System.out.println();
     }
 
     public void printAllState() {
         System.out.println("***********************AllState*********************");
-        System.out.println("volume : " + traderState.volume);
-        System.out.println("balance : " + traderState.balance);
-        System.out.println("payedFee  : " + traderState.payedFee);
+        System.out.println("volume : " + formatter(traderState.volume));
+        System.out.println("balance : " + formatter(traderState.balance));
+        System.out.println("payedFee  : " + formatter(traderState.payedFee));
         System.out.println();
     }
 
@@ -155,8 +156,8 @@ public class Trader extends Thread {
         TraderState finalState = traderState;
 
         System.out.println("************************Result**********************");
-        System.out.println("Initial Volume : " + formatter(initialState.volume) + "  ,  Final Volume : " + formatter(finalState.volume) + "  ,  Ratio: " + ratioMaker(initialState.volume, finalState.volume));
-        System.out.println("Initial Balance : " + formatter(initialState.balance) + "  ,  Final Balance : " + formatter(finalState.balance) + "  ,  Ratio: " + ratioMaker(initialState.balance, finalState.balance));
+        System.out.println("Initial Volume : " + formatter(initialState.volume) + "  ,  Final Volume : " + formatter(finalState.volume) + "  , Growth Rate: " + growthRateMaker(initialState.volume, finalState.volume));
+        System.out.println("Initial Balance : " + formatter(initialState.balance) + "  ,  Final Balance : " + formatter(finalState.balance) + "  , Growth Rate: " + growthRateMaker(initialState.balance, finalState.balance));
         System.out.println("Initial PayedFee : " + formatter(initialState.payedFee) + "  ,  Final PayedFee : " + formatter(finalState.payedFee));
         System.out.println();
     }
@@ -165,7 +166,7 @@ public class Trader extends Thread {
         return (((double) Math.round(value * 100)) / 100);
     }
 
-    private double ratioMaker(double initialValue, double finalValue) {
+    private double growthRateMaker(double initialValue, double finalValue) {
         if (initialValue > 0) return formatter(((finalValue / initialValue) - 1) * 100);
         else return -1;
     }
@@ -193,8 +194,10 @@ public class Trader extends Thread {
             if ((orderRequest = applySettings.apply(record)) != null) {
                 iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
                 updateTraderState(orderRequest);
+                if(traderState.stopLossEnable) isRunning = false;
                 break;
             }
+
         }
     }
 
@@ -216,8 +219,11 @@ public class Trader extends Thread {
         } else {
             if (record.getLow() < traderSettings.thresholdPrice - traderSettings.delta)
                 return createOrderRequest(Side.BUY, traderSettings.thresholdPrice - traderSettings.delta);
-            else if (record.getHigh() > traderSettings.thresholdPrice + traderSettings.stopLoss)
+            else if (record.getHigh() > traderSettings.thresholdPrice + traderSettings.stopLoss) {
+                traderState.stopLossEnable=true;
                 return createOrderRequest(Side.BUY, traderSettings.thresholdPrice + traderSettings.stopLoss);
+
+            }
         }
         return null;
     }
@@ -231,6 +237,7 @@ public class Trader extends Thread {
             if (record.getHigh() > (traderSettings.thresholdPrice + traderSettings.delta))
                 return createOrderRequest(Side.SELL, traderSettings.thresholdPrice + traderSettings.delta);
             else if (record.getLow() < traderSettings.thresholdPrice - traderSettings.stopLoss) {
+                traderState.stopLossEnable=true;
                 return createOrderRequest(Side.SELL, traderSettings.thresholdPrice - traderSettings.stopLoss);
             }
         }
