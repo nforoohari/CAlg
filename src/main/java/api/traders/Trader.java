@@ -39,17 +39,6 @@ public class Trader extends Thread {
     public Trader() {
     }
 
-    public Trader(Exchange exchange, double fee, Interval interval, Currency currency) throws Exception {
-        this.exchange = exchange;
-        this.fee = fee;
-        this.interval = interval;
-        this.currency = currency;
-        this.startTime = "";
-        this.endTime = "";
-        this.date = new Date();
-        init(Side.BUY);
-    }
-
     public Trader(Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
         this.exchange = exchange;
         this.fee = fee;
@@ -60,6 +49,12 @@ public class Trader extends Thread {
         this.date = new Date();
         init(Side.BUY);
     }
+
+    public Trader(Exchange exchange, double fee, Interval interval, Currency currency) throws Exception {
+        this(exchange, fee, interval, currency, "", "");
+    }
+
+
 
 
     protected void init(Side side) throws Exception {
@@ -88,7 +83,7 @@ public class Trader extends Thread {
     public void run() {
         {
 
-            System.out.println("Trading started at : " + new Date());
+            System.out.println("Trading started at : " + new Date() + "\n");
 
             while (isRunning) {
 
@@ -113,8 +108,8 @@ public class Trader extends Thread {
                 if (isRunning) changeSettings();
             }
 
-            System.out.println("Trading stopped at : " + new Date());
-            System.out.println("The Final State");
+            System.out.println("Trading stopped at : " + new Date() + "\n");
+            System.out.println("****************** The Final State ****************");
             traderState.setDate(new Date());
             try {
                 TraderStateDao.insert(traderState);
@@ -131,7 +126,7 @@ public class Trader extends Thread {
     }
 
     public void printAllSettings() {
-        System.out.println("**********************AllSettings********************");
+        System.out.println("********************** Settings *******************");
         System.out.println("thresholdPrice : " + formatter(traderSettings.thresholdPrice));
         System.out.println("stopLossPercent : " + formatter(traderSettings.stopLossPercent));
         System.out.println("stopLoss : " + formatter(traderSettings.stopLoss));
@@ -143,10 +138,11 @@ public class Trader extends Thread {
     }
 
     public void printAllState() {
-        System.out.println("***********************AllState*********************");
+        System.out.println("*********************** State *********************");
         System.out.println("volume : " + formatter(traderState.volume));
         System.out.println("balance : " + formatter(traderState.balance));
         System.out.println("payedFee  : " + formatter(traderState.payedFee));
+        System.out.println("stopLossEnable : " + traderState.stopLossEnable);
         System.out.println();
     }
 
@@ -155,10 +151,11 @@ public class Trader extends Thread {
         TraderState initialState = TraderStateDao.findFirstByTraderId(this.getId());
         TraderState finalState = traderState;
 
-        System.out.println("************************Result**********************");
+        System.out.println("********************** Result ********************");
         System.out.println("Initial Volume : " + formatter(initialState.volume) + "  ,  Final Volume : " + formatter(finalState.volume) + "  , Growth Rate: " + growthRateMaker(initialState.volume, finalState.volume));
         System.out.println("Initial Balance : " + formatter(initialState.balance) + "  ,  Final Balance : " + formatter(finalState.balance) + "  , Growth Rate: " + growthRateMaker(initialState.balance, finalState.balance));
-        System.out.println("Initial PayedFee : " + formatter(initialState.payedFee) + "  ,  Final PayedFee : " + formatter(finalState.payedFee));
+        System.out.println("PayedFee : " + formatter(finalState.payedFee));
+        System.out.println("stopLossEnable : " + finalState.stopLossEnable);
         System.out.println();
     }
 
@@ -194,7 +191,7 @@ public class Trader extends Thread {
             if ((orderRequest = applySettings.apply(record)) != null) {
                 iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
                 updateTraderState(orderRequest);
-                if(traderState.stopLossEnable) isRunning = false;
+                if (traderState.stopLossEnable) isRunning = false;
                 break;
             }
 
@@ -203,8 +200,9 @@ public class Trader extends Thread {
 
     private void swapSide() {
         firstStep = !firstStep;
-        currentSide = (currentSide == Side.SELL) ? Side.BUY : Side.SELL;
         applySettings = (currentSide == Side.SELL) ? this::buyCheck : this::sellCheck;
+        currentSide = (currentSide == Side.SELL) ? Side.BUY : Side.SELL;
+
     }
 
     public void stopTrading() {
@@ -220,7 +218,7 @@ public class Trader extends Thread {
             if (record.getLow() < traderSettings.thresholdPrice - traderSettings.delta)
                 return createOrderRequest(Side.BUY, traderSettings.thresholdPrice - traderSettings.delta);
             else if (record.getHigh() > traderSettings.thresholdPrice + traderSettings.stopLoss) {
-                traderState.stopLossEnable=true;
+                traderState.stopLossEnable = true;
                 return createOrderRequest(Side.BUY, traderSettings.thresholdPrice + traderSettings.stopLoss);
 
             }
@@ -237,7 +235,7 @@ public class Trader extends Thread {
             if (record.getHigh() > (traderSettings.thresholdPrice + traderSettings.delta))
                 return createOrderRequest(Side.SELL, traderSettings.thresholdPrice + traderSettings.delta);
             else if (record.getLow() < traderSettings.thresholdPrice - traderSettings.stopLoss) {
-                traderState.stopLossEnable=true;
+                traderState.stopLossEnable = true;
                 return createOrderRequest(Side.SELL, traderSettings.thresholdPrice - traderSettings.stopLoss);
             }
         }

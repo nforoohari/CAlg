@@ -7,17 +7,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.time.ZoneId;
 
 public class RecordDao {
 
     private static final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //    private static final ZoneId tehranZone = ZoneId.of("Asia/Tehran");
+
 
     public static List<Record> load(Interval interval, Currency currency, String startTime, String endTime) throws Exception {
 
@@ -32,14 +34,16 @@ public class RecordDao {
 
         Connection conn = DB.getConnection();
 
-        String sql = "SELECT * FROM " + interval.getTableName() + " WHERE (currency = ?) AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
+        String sql = "SELECT * FROM " + interval.getTableName() + " WHERE (currency = " + currency.getCode() + ") AND (interval_date BETWEEN ? AND ?) ORDER BY interval_date";
+
         PreparedStatement ps = conn.prepareStatement(sql);
 
-        ps.setInt(1, currency.getCode());
-        ps.setTimestamp(2, new java.sql.Timestamp(startMs));
-        ps.setTimestamp(3, new java.sql.Timestamp(endMs));
-//        ps.setString(2, startTime);
-//        ps.setString(3, endTime);
+//        ps.setTimestamp(1, new java.sql.Timestamp(startMs));
+//        ps.setTimestamp(2, new java.sql.Timestamp(endMs));
+
+        ps.setTimestamp(1, new java.sql.Timestamp(startMs),java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
+        ps.setTimestamp(2, new java.sql.Timestamp(endMs),java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
+
 
         ResultSet rs = ps.executeQuery();
 
@@ -48,9 +52,8 @@ public class RecordDao {
         while (rs.next()) {
 
             list.add(new Record(
-                    rs.getLong("id"),
                     Currency.fromCode(rs.getInt("currency")),
-                    rs.getTimestamp("interval_date"),
+                    rs.getTimestamp("interval_date", java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))),
                     rs.getDouble("open"),
                     rs.getDouble("high"),
                     rs.getDouble("low"),
