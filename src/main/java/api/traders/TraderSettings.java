@@ -8,35 +8,32 @@ public class TraderSettings {
     private long traderId;
     private Date date;
 
-    public double thresholdPrice;
-    public double stopLossPercent;
-    public double stopLoss;
-    public double deltaPercent;
-    public double delta;
-    public double ascendingPercent;
-    public double ascending;
+    public double bidPrice;
+    public double askPrice;
+    public double lowerStopLossPrice;
+    public double upperStopLossPrice;
+    public double changePercent;
     public boolean topFix;
     public boolean bottomFix;
 
     public TraderSettings() {
     }
 
-    public TraderSettings(double thresholdPrice, double stopLossPercent, double deltaPercent, double ascendingPercent, boolean topFix, boolean bottomFix) {
-
-        this.thresholdPrice = thresholdPrice;
-        this.stopLossPercent = stopLossPercent;
-        this.stopLoss = thresholdPrice * stopLossPercent / 100;
-        this.deltaPercent = deltaPercent;
-        this.delta = thresholdPrice * deltaPercent / 100;
-        this.ascendingPercent = ascendingPercent;
-        this.ascending = thresholdPrice * ascendingPercent / 100;
+    public TraderSettings(double bidPrice, double askPrice, double lowerStopLossPrice, double upperStopLossPrice, double changePercent, boolean topFix, boolean bottomFix) {
+        this.bidPrice = bidPrice;
+        this.askPrice = askPrice;
+        this.lowerStopLossPrice = lowerStopLossPrice;
+        this.upperStopLossPrice = upperStopLossPrice;
+        this.changePercent = changePercent;
         this.topFix = topFix;
         this.bottomFix = bottomFix;
     }
 
-    public long getId() {
-        return id;
+    public TraderSettings(double bidPrice, double askPrice, double lowerStopLossPrice, double upperStopLossPrice) {
+        this(bidPrice, askPrice, lowerStopLossPrice, upperStopLossPrice, 0, true, true);
     }
+
+    public long getId() { return id; }
 
     public void setId(long id) {
         this.id = id;
@@ -46,9 +43,7 @@ public class TraderSettings {
         return traderId;
     }
 
-    public void setTraderId(long traderId) {
-        this.traderId = traderId;
-    }
+    public void setTraderId(long traderId) { this.traderId = traderId; }
 
     public Date getDate() {
         return date;

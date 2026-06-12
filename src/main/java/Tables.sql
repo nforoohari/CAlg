@@ -120,7 +120,7 @@ CREATE TABLE trader_state
     state_date       datetime,
     volume           DECIMAL(20, 8) NOT NULL,
     balance          DECIMAL(20, 8) NOT NULL,
-    payed_fee         DECIMAL(20, 8) NOT NULL,
+    payed_fee        DECIMAL(20, 8) NOT NULL,
     stop_loss_enable BOOLEAN,
     INDEX idx_time (state_date),
     CONSTRAINT fk_trader_state FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
@@ -128,18 +128,16 @@ CREATE TABLE trader_state
 
 CREATE TABLE trader_settings
 (
-    id                BIGINT AUTO_INCREMENT PRIMARY KEY,
-    trader_id         BIGINT         NOT NULL,
-    settings_date     datetime,
-    threshold_price   DECIMAL(20, 8) NOT NULL,
-    stop_loss_percent DECIMAL(20, 8) NOT NULL,
-    stop_loss         DECIMAL(20, 8) NOT NULL,
-    delta_percent     DECIMAL(20, 8) NOT NULL,
-    delta             DECIMAL(20, 8) NOT NULL,
-    ascending_percent DECIMAL(20, 8) NOT NULL,
-    ascending         DECIMAL(20, 8) NOT NULL,
-    top_fix           BOOLEAN,
-    bottom_fix        BOOLEAN,
+    id                    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    trader_id             BIGINT         NOT NULL,
+    settings_date         datetime,
+    bid_price             DECIMAL(20, 8) NOT NULL,
+    ask_price             DECIMAL(20, 8) NOT NULL,
+    lower_stop_loss_price DECIMAL(20, 8) NOT NULL,
+    upper_stop_loss_price DECIMAL(20, 8) NOT NULL,
+    change_percent        DECIMAL(20, 8) NOT NULL,
+    top_fix               BOOLEAN,
+    bottom_fix            BOOLEAN,
     INDEX idx_time (settings_date),
     CONSTRAINT fk_trader_settings FOREIGN KEY (trader_id) REFERENCES trader (id) ON DELETE CASCADE
 );

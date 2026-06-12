@@ -47,6 +47,7 @@ public class NonOprBinance implements IExc {
             }
         }
         this.END_POINT = this.BASE_URL + "/api/v3/klines?symbol=" + currency.getSymbol() + "&interval=" + interval.getName() + "&limit=2";
+        System.out.println(END_POINT);
     }
 
     @Override
@@ -120,7 +121,9 @@ public class NonOprBinance implements IExc {
             double close = rowJson.getDouble(4);
             double volume = rowJson.getDouble(5);
 
-            records.add(new Record(currency, new Date(openTimeMs), open, high, low, close, volume));
+            Record record = new Record(currency, new Date(openTimeMs), open, high, low, close, volume);
+            System.out.println(record);
+            records.add(record);
 
         }
         return records.getFirst();

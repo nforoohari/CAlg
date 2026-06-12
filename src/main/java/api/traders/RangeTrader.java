@@ -26,36 +26,33 @@ public class RangeTrader extends Trader {
 
         } else if (ts.bottomFix) {
 
-//            ts.thresholdPrice =;
-//            ts.stopLossPercent =;
-//            ts.stopLoss = ts.thresholdPrice * ts.stopLossPercent / 100;
-//            ts.deltaPercent =;
-            ts.delta = ((ts.delta + ts.ascending) > (5 * ts.thresholdPrice * getFee() / 100)) ? (ts.delta + ts.ascending) : ts.delta;
-//            ts.ascendingPercent =;
-//            ts.ascending = ts.thresholdPrice * ts.ascendingPercent / 100;
+            double ap = ts.askPrice + (ts.askPrice * (ts.changePercent / 100));
 
+            if ((ap - ts.bidPrice) > (5 * ts.askPrice * getFee() / 100)) {
+                ts.askPrice += (ts.askPrice * (ts.changePercent / 100));
+                ts.upperStopLossPrice += (ts.upperStopLossPrice * (ts.changePercent / 100));
+            }
 
         } else if (ts.topFix) {
 
-//            ts.thresholdPrice =;
-//            ts.stopLossPercent =;
-//            ts.stopLoss = ts.thresholdPrice * ts.stopLossPercent / 100;
-//            ts.deltaPercent =;
-            ts.delta = ((ts.delta + ts.ascending) > (5 * ts.thresholdPrice * getFee() / 100)) ? (ts.delta + ts.ascending) : ts.delta;
-//            ts.ascendingPercent =;
-//            ts.ascending = ts.thresholdPrice * ts.ascendingPercent / 100;
+            double bp = ts.bidPrice + (ts.bidPrice * (ts.changePercent / 100));
+
+            if ((ts.askPrice - bp) > (5 * ts.askPrice * getFee() / 100)) {
+                ts.bidPrice += (ts.bidPrice * (ts.changePercent / 100));
+                ts.lowerStopLossPrice += (ts.lowerStopLossPrice * (ts.changePercent / 100));
+            }
 
         } else {
 
-            if ((ts.delta + ts.ascending) > (5 * ts.thresholdPrice * getFee() / 100)) {
+            double ap = ts.askPrice + (ts.askPrice * (ts.changePercent / 100));
+            double bp = ts.bidPrice + (ts.bidPrice * (ts.changePercent / 100));
 
-                ts.thresholdPrice += ts.ascending / 2;
-//            ts.deltaPercent =;
-                ts.delta += ts.ascending;
-//            ts.stopLossPercent =;
-                ts.stopLoss = ts.thresholdPrice * ts.stopLossPercent / 100;
-//            ts.ascendingPercent =;
-                ts.ascending = ts.thresholdPrice * ts.ascendingPercent / 100;
+            if ((ap - bp) > (5 * ap * getFee() / 100)) {
+                ts.askPrice += (ts.askPrice * (ts.changePercent / 100));
+                ts.upperStopLossPrice += (ts.upperStopLossPrice * (ts.changePercent / 100));
+
+                ts.bidPrice += (ts.bidPrice * (ts.changePercent / 100));
+                ts.lowerStopLossPrice += (ts.lowerStopLossPrice * (ts.changePercent / 100));
             }
 
         }

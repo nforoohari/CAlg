@@ -15,17 +15,15 @@ public class TraderSettingsDao {
                 (
                     trader_id,
                     settings_date,
-                    threshold_price,
-                    stop_loss_percent,
-                    stop_loss,
-                    delta_percent,
-                    delta,
-                    ascending_percent,
-                    ascending,
+                    bid_price,
+                    ask_price,
+                    lower_stop_loss_price,
+                    upper_stop_loss_price,
+                    change_percent,
                     top_fix,
                     bottom_fix
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
                 """;
 
         try (
@@ -36,15 +34,13 @@ public class TraderSettingsDao {
 
             ps.setLong(1, settings.getTraderId());
             ps.setTimestamp(2, new java.sql.Timestamp(settings.getDate().getTime()));
-            ps.setDouble(3, settings.thresholdPrice);
-            ps.setDouble(4, settings.stopLossPercent);
-            ps.setDouble(5, settings.stopLoss);
-            ps.setDouble(6, settings.deltaPercent);
-            ps.setDouble(7, settings.delta);
-            ps.setDouble(8, settings.ascendingPercent);
-            ps.setDouble(9, settings.ascending);
-            ps.setBoolean(10, settings.topFix);
-            ps.setBoolean(11, settings.bottomFix);
+            ps.setDouble(3, settings.bidPrice);
+            ps.setDouble(4, settings.askPrice);
+            ps.setDouble(5, settings.lowerStopLossPrice);
+            ps.setDouble(6, settings.upperStopLossPrice);
+            ps.setDouble(7, settings.changePercent);
+            ps.setBoolean(8, settings.topFix);
+            ps.setBoolean(9, settings.bottomFix);
 
             ps.executeUpdate();
 
@@ -78,7 +74,7 @@ public class TraderSettingsDao {
                 SELECT *
                 FROM trader_settings
                 WHERE trader_id=?
-                ORDER BY settings_date ASC
+                ORDER BY id ASC
                 LIMIT 1
                 """;
 
@@ -99,13 +95,11 @@ public class TraderSettingsDao {
                     settings.setId(rs.getLong(1));
                     settings.setTraderId(rs.getLong(2));
                     settings.setDate(rs.getTimestamp(3));
-                    settings.thresholdPrice = rs.getDouble("threshold_price");
-                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
-                    settings.stopLoss = rs.getDouble("stop_loss");
-                    settings.deltaPercent = rs.getDouble("delta_percent");
-                    settings.delta = rs.getDouble("delta");
-                    settings.ascendingPercent = rs.getDouble("ascending_percent");
-                    settings.ascending = rs.getDouble("ascending");
+                    settings.bidPrice = rs.getDouble("bid_price");
+                    settings.askPrice = rs.getDouble("ask_price");
+                    settings.lowerStopLossPrice = rs.getDouble("lower_stop_loss_price");
+                    settings.upperStopLossPrice = rs.getDouble("upper_stop_loss_price");
+                    settings.changePercent = rs.getDouble("change_percent");
                     settings.topFix = rs.getBoolean("top_fix");
                     settings.bottomFix = rs.getBoolean("bottom_fix");
 
@@ -123,7 +117,7 @@ public class TraderSettingsDao {
                 SELECT *
                 FROM trader_settings
                 WHERE trader_id=?
-                ORDER BY settings_date DESC
+                ORDER BY id DESC
                 LIMIT 1
                 """;
 
@@ -144,13 +138,11 @@ public class TraderSettingsDao {
                     settings.setId(rs.getLong(1));
                     settings.setTraderId(rs.getLong(2));
                     settings.setDate(rs.getTimestamp(3));
-                    settings.thresholdPrice = rs.getDouble("threshold_price");
-                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
-                    settings.stopLoss = rs.getDouble("stop_loss");
-                    settings.deltaPercent = rs.getDouble("delta_percent");
-                    settings.delta = rs.getDouble("delta");
-                    settings.ascendingPercent = rs.getDouble("ascending_percent");
-                    settings.ascending = rs.getDouble("ascending");
+                    settings.bidPrice = rs.getDouble("bid_price");
+                    settings.askPrice = rs.getDouble("ask_price");
+                    settings.lowerStopLossPrice = rs.getDouble("lower_stop_loss_price");
+                    settings.upperStopLossPrice = rs.getDouble("upper_stop_loss_price");
+                    settings.changePercent = rs.getDouble("change_percent");
                     settings.topFix = rs.getBoolean("top_fix");
                     settings.bottomFix = rs.getBoolean("bottom_fix");
 
@@ -170,7 +162,7 @@ public class TraderSettingsDao {
                 SELECT *
                 FROM trader_settings
                 WHERE trader_id=?
-                ORDER BY settings_date
+                ORDER BY id
                 """;
 
         try (
@@ -190,13 +182,11 @@ public class TraderSettingsDao {
                     settings.setId(rs.getLong(1));
                     settings.setTraderId(rs.getLong(2));
                     settings.setDate(rs.getTimestamp(3));
-                    settings.thresholdPrice = rs.getDouble("threshold_price");
-                    settings.stopLossPercent = rs.getDouble("stop_loss_percent");
-                    settings.stopLoss = rs.getDouble("stop_loss");
-                    settings.deltaPercent = rs.getDouble("delta_percent");
-                    settings.delta = rs.getDouble("delta");
-                    settings.ascendingPercent = rs.getDouble("ascending_percent");
-                    settings.ascending = rs.getDouble("ascending");
+                    settings.bidPrice = rs.getDouble("bid_price");
+                    settings.askPrice = rs.getDouble("ask_price");
+                    settings.lowerStopLossPrice = rs.getDouble("lower_stop_loss_price");
+                    settings.upperStopLossPrice = rs.getDouble("upper_stop_loss_price");
+                    settings.changePercent = rs.getDouble("change_percent");
                     settings.topFix = rs.getBoolean("top_fix");
                     settings.bottomFix = rs.getBoolean("bottom_fix");
 

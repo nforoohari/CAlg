@@ -26,9 +26,6 @@ public class Trader extends Thread {
     private Date date;
 
     private IExc iExc;
-    private boolean firstStep;
-    private Side currentSide;
-    private ApplySettings applySettings;
     private boolean isRunning;
     private Record record;
 
@@ -47,7 +44,7 @@ public class Trader extends Thread {
         this.startTime = startTime;
         this.endTime = endTime;
         this.date = new Date();
-        init(Side.BUY);
+        init();
     }
 
     public Trader(Exchange exchange, double fee, Interval interval, Currency currency) throws Exception {
@@ -55,29 +52,19 @@ public class Trader extends Thread {
     }
 
 
-
-
-    protected void init(Side side) throws Exception {
-
+    protected void init() throws Exception {
         assert exchange != null;
         iExc = switch (exchange) {
             case MyExc -> new MyExc(exchange, fee, interval, currency, startTime, endTime);
             case Binance_MainNet_NonOpr, Binance_TestNet_NonOpr -> new NonOprBinance(exchange, fee, interval, currency);
             case Binance_MainNet_Opr, Binance_TestNet_Opr -> new OprBinance(exchange, fee, interval, currency);
         };
-        firstStep = true;
-        currentSide = side;
-        applySettings = (side == Side.BUY) ? this::buyCheck : this::sellCheck;
+
         isRunning = true;
         record = null;
 
         TraderDao.insert(this);
 
-//        traderState = TraderStateDao.findFirstByTraderId(1);
-//        traderSettings = TraderSettingsDao.findFirstByTraderId(1);
-
-//        traderState.setTraderId(this.getId());
-//        traderSettings.setTraderId(this.getId());
     }
 
     public void run() {
@@ -88,52 +75,50 @@ public class Trader extends Thread {
             while (isRunning) {
 
                 try {
-                    traderState.setDate(new Date());
+
                     traderSettings.setDate(new Date());
-                    TraderStateDao.insert(traderState);
+                    traderState.setDate(new Date());
                     TraderSettingsDao.insert(traderSettings);
+                    TraderStateDao.insert(traderState);
+                    printAllSettings();
+                    printAllState();
 
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                printAllSettings();
-                printAllState();
-
-                try {
                     trade();
+
+                    if (isRunning) changeSettings();
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
-                if (isRunning) changeSettings();
             }
 
             System.out.println("Trading stopped at : " + new Date() + "\n");
             System.out.println("****************** The Final State ****************");
-            traderState.setDate(new Date());
+
             try {
+                traderState.setDate(new Date());
                 TraderStateDao.insert(traderState);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            printAllState();
-            try {
+                printAllState();
+
                 printResult();
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
+
     public void printAllSettings() {
         System.out.println("********************** Settings *******************");
-        System.out.println("thresholdPrice : " + formatter(traderSettings.thresholdPrice));
-        System.out.println("stopLossPercent : " + formatter(traderSettings.stopLossPercent));
-        System.out.println("stopLoss : " + formatter(traderSettings.stopLoss));
-        System.out.println("deltaPercent : " + formatter(traderSettings.deltaPercent));
-        System.out.println("delta : " + formatter(traderSettings.delta));
-        System.out.println("ascendingPercent : " + formatter(traderSettings.ascendingPercent));
-        System.out.println("ascending : " + formatter(traderSettings.ascending));
+        System.out.println("bidPrice : " + formatter(traderSettings.bidPrice));
+        System.out.println("askPrice : " + formatter(traderSettings.askPrice));
+        System.out.println("lowerStopLossPrice : " + formatter(traderSettings.lowerStopLossPrice));
+        System.out.println("upperStopLossPrice : " + formatter(traderSettings.upperStopLossPrice));
+        System.out.println("changePercent : " + formatter(traderSettings.changePercent));
+        System.out.println("topFix : " + traderSettings.topFix);
+        System.out.println("bottomFix : " + traderSettings.bottomFix);
         System.out.println();
     }
 
@@ -171,15 +156,8 @@ public class Trader extends Thread {
     protected void changeSettings() {
     }
 
+
     private void trade() throws Exception {
-
-        stepTrade();
-        swapSide();
-        stepTrade();
-        swapSide();
-    }
-
-    private void stepTrade() throws Exception {
 
         OrderRequest orderRequest = null;
         while (isRunning) {
@@ -188,58 +166,41 @@ public class Trader extends Thread {
                 isRunning = false;
                 break;
             }
-            if ((orderRequest = applySettings.apply(record)) != null) {
+            if ((orderRequest = marketCheck(record)) != null) {
                 iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
                 updateTraderState(orderRequest);
                 if (traderState.stopLossEnable) isRunning = false;
                 break;
             }
-
         }
-    }
-
-    private void swapSide() {
-        firstStep = !firstStep;
-        applySettings = (currentSide == Side.SELL) ? this::buyCheck : this::sellCheck;
-        currentSide = (currentSide == Side.SELL) ? Side.BUY : Side.SELL;
-
     }
 
     public void stopTrading() {
         isRunning = false;
     }
 
-    private OrderRequest buyCheck(Record record) {
+    private OrderRequest marketCheck(Record record) {
 
-        if (firstStep) {
-            if (record.getLow() < traderSettings.thresholdPrice)
-                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice);
-        } else {
-            if (record.getLow() < traderSettings.thresholdPrice - traderSettings.delta)
-                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice - traderSettings.delta);
-            else if (record.getHigh() > traderSettings.thresholdPrice + traderSettings.stopLoss) {
+        if (traderState.balance > 0) {
+            if (record.getClose() < traderSettings.bidPrice && record.getClose() >= traderSettings.lowerStopLossPrice) {
+                return createOrderRequest(Side.BUY, traderSettings.bidPrice);
+            } else if (record.getClose() > traderSettings.upperStopLossPrice) {
                 traderState.stopLossEnable = true;
-                return createOrderRequest(Side.BUY, traderSettings.thresholdPrice + traderSettings.stopLoss);
-
+                return createOrderRequest(Side.BUY, traderSettings.upperStopLossPrice);
             }
         }
-        return null;
-    }
 
-    private OrderRequest sellCheck(Record record) {
-
-        if (firstStep) {
-            if (record.getHigh() > traderSettings.thresholdPrice)
-                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice);
-        } else {
-            if (record.getHigh() > (traderSettings.thresholdPrice + traderSettings.delta))
-                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice + traderSettings.delta);
-            else if (record.getLow() < traderSettings.thresholdPrice - traderSettings.stopLoss) {
+        if (traderState.volume > 0) {
+            if (record.getClose() > traderSettings.askPrice && record.getClose() <= traderSettings.upperStopLossPrice) {
+                return createOrderRequest(Side.SELL, traderSettings.askPrice);
+            } else if (record.getClose() < traderSettings.lowerStopLossPrice) {
                 traderState.stopLossEnable = true;
-                return createOrderRequest(Side.SELL, traderSettings.thresholdPrice - traderSettings.stopLoss);
+                return createOrderRequest(Side.SELL, traderSettings.lowerStopLossPrice);
             }
         }
+
         return null;
+
     }
 
     private void updateTraderState(OrderRequest orderRequest) {
