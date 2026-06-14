@@ -6,12 +6,14 @@ import api.enums.*;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;
 import api.orders.OrderTransaction;
+import api.traders.Trader;
 
 import java.util.Date;
 import java.util.List;
 
 public class MyExc implements IExc {
 
+    private Trader trader;
     private Exchange exchange;
     private double fee;
     private Interval interval;
@@ -23,7 +25,8 @@ public class MyExc implements IExc {
     private int lcrSize;
     private int cnt;
 
-    public MyExc(Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
+    public MyExc(Trader trader, Exchange exchange, double fee, Interval interval, Currency currency, String startTime, String endTime) throws Exception {
+        this.trader = trader;
         this.exchange = exchange;
         this.fee = fee;
         this.interval = interval;
@@ -34,6 +37,7 @@ public class MyExc implements IExc {
         this.lcr = RecordDao.load(interval, currency, startTime, endTime);
         this.lcrSize = lcr.size();
         this.cnt = 0;
+
     }
 
     @Override
@@ -53,6 +57,11 @@ public class MyExc implements IExc {
     }
 
     @Override
+    public OrderStatus terminate(long orderRequestId) throws Exception {
+        return OrderStateDao.terminate(orderRequestId);
+    }
+
+    @Override
     public OrderStatus cancel(long orderRequestId) throws Exception {
         return OrderStateDao.cancel(orderRequestId);
     }
@@ -61,19 +70,29 @@ public class MyExc implements IExc {
     public void submitByConfirmation(OrderRequest orderRequest, RetryTimes retryTimes) throws Exception {
 
         int n = 0;
+        Record record = null;
 
         submit(orderRequest);
-        Record record = fetchExcData();
+
+        do {
+            record = fetchExcData();
+        } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+        trader.lastRecord = record;
 
         while (n < retryTimes.getValue() && record != null && orderRequest.getState().getStatus() == Status.In_Progress) {
 
             offlineCheckOrderStatus(orderRequest, record);
-            record = fetchExcData();
+
+            do {
+                record = fetchExcData();
+            } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+            trader.lastRecord = record;
+
             n++;
         }
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
-            OrderStatus orderStatus = cancel(orderRequest.getId());
+            OrderStatus orderStatus = terminate(orderRequest.getId());
             orderRequest.getState().setStatus(orderStatus.getStatus());
             orderRequest.getState().setStatusDate(orderStatus.getStatusDate());
         }
@@ -217,5 +236,4 @@ public class MyExc implements IExc {
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
-
 }

@@ -3,8 +3,9 @@ package api.enums;
 public enum Status {
 
     In_Progress(0),
-    Cancelled(1),
-    Completed(2);
+    Canceled(1),
+    In_Completed(2),
+    Completed(3);
 
     private final int code;
 

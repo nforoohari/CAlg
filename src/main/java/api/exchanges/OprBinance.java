@@ -6,6 +6,7 @@ import api.daos.Record;
 import api.enums.*;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;
+import api.traders.Trader;
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -34,12 +35,15 @@ public class OprBinance implements IExc {
     private String BASE_URL;
     private String END_POINT;
 
+    private Trader trader;
     private Exchange exchange;
     private double fee;
     private Interval interval;
     private Currency currency;
 
-    public OprBinance(Exchange exchange, double fee, Interval interval, Currency currency) {
+
+    public OprBinance(Trader trader, Exchange exchange, double fee, Interval interval, Currency currency) {
+        this.trader = trader;
         this.exchange = exchange;
         this.fee = fee;
         this.interval = interval;
@@ -82,6 +86,15 @@ public class OprBinance implements IExc {
 
 
     @Override
+    public OrderStatus terminate(long orderRequestId) throws Exception {
+        //extract orderId from orderRequest based on orderRequestId
+        //cancelOrder(currency.getSymbol(),orderId);
+        // Update orderRequest on DB
+        //return orderStatus;
+        return null;
+    }
+
+    @Override
     public OrderStatus cancel(long orderRequestId) throws Exception {
         //extract orderId from orderRequest based on orderRequestId
         //cancelOrder(currency.getSymbol(),orderId);
@@ -106,7 +119,7 @@ public class OprBinance implements IExc {
         }
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
-            OrderStatus orderStatus = cancel(orderRequest.getId());
+            OrderStatus orderStatus = terminate(orderRequest.getId());
             orderRequest.getState().setStatus(orderStatus.getStatus());
             orderRequest.getState().setStatusDate(orderStatus.getStatusDate());
         }

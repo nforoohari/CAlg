@@ -8,6 +8,7 @@ import api.enums.*;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;
 import api.orders.OrderTransaction;
+import api.traders.Trader;
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -27,12 +28,15 @@ public class NonOprBinance implements IExc {
     private String BASE_URL;
     private String END_POINT;
 
+    private Trader trader;
     private Exchange exchange;
     private double fee;
     private Interval interval;
     private Currency currency;
 
-    public NonOprBinance(Exchange exchange, double fee, Interval interval, Currency currency) {
+
+    public NonOprBinance(Trader trader, Exchange exchange, double fee, Interval interval, Currency currency) {
+        this.trader = trader;
         this.exchange = exchange;
         this.fee = fee;
         this.interval = interval;
@@ -48,6 +52,7 @@ public class NonOprBinance implements IExc {
         }
         this.END_POINT = this.BASE_URL + "/api/v3/klines?symbol=" + currency.getSymbol() + "&interval=" + interval.getName() + "&limit=2";
         System.out.println(END_POINT);
+
     }
 
     @Override
@@ -66,6 +71,10 @@ public class NonOprBinance implements IExc {
         return orderRequest;
     }
 
+    @Override
+    public OrderStatus terminate(long orderRequestId) throws Exception {
+        return OrderStateDao.terminate(orderRequestId);
+    }
 
     @Override
     public OrderStatus cancel(long orderRequestId) throws Exception {
@@ -76,21 +85,31 @@ public class NonOprBinance implements IExc {
     public void submitByConfirmation(OrderRequest orderRequest, RetryTimes retryTimes) throws Exception {
 
         int n = 0;
+        Record record;
 
         submit(orderRequest);
-        Thread.sleep(interval.getMillis());
-        Record record = fetchExcData();
+
+        do {
+            Thread.sleep(interval.getMillisDividedByTwo());
+            record = fetchExcData();
+        } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+        trader.lastRecord = record;
 
         while (n < retryTimes.getValue() && record != null && orderRequest.getState().getStatus() == Status.In_Progress) {
 
             offlineCheckOrderStatus(orderRequest, record);
-            Thread.sleep(interval.getMillis());
-            record = fetchExcData();
+
+            do {
+                Thread.sleep(interval.getMillisDividedByTwo());
+                record = fetchExcData();
+            } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+            trader.lastRecord = record;
+
             n++;
         }
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
-            OrderStatus orderStatus = cancel(orderRequest.getId());
+            OrderStatus orderStatus = terminate(orderRequest.getId());
             orderRequest.getState().setStatus(orderStatus.getStatus());
             orderRequest.getState().setStatusDate(orderStatus.getStatusDate());
         }
@@ -126,6 +145,7 @@ public class NonOprBinance implements IExc {
             records.add(record);
 
         }
+        System.out.println("the first" + records.getFirst());
         return records.getFirst();
     }
 

@@ -32,6 +32,7 @@ public class Trader extends Thread {
     private TraderState traderState;
     private TraderSettings traderSettings;
 
+    public Record lastRecord;
 
     public Trader() {
     }
@@ -55,13 +56,14 @@ public class Trader extends Thread {
     protected void init() throws Exception {
         assert exchange != null;
         iExc = switch (exchange) {
-            case MyExc -> new MyExc(exchange, fee, interval, currency, startTime, endTime);
-            case Binance_MainNet_NonOpr, Binance_TestNet_NonOpr -> new NonOprBinance(exchange, fee, interval, currency);
-            case Binance_MainNet_Opr, Binance_TestNet_Opr -> new OprBinance(exchange, fee, interval, currency);
+            case MyExc -> new MyExc(this,exchange, fee, interval, currency, startTime, endTime);
+            case Binance_MainNet_NonOpr, Binance_TestNet_NonOpr -> new NonOprBinance(this,exchange, fee, interval, currency);
+            case Binance_MainNet_Opr, Binance_TestNet_Opr -> new OprBinance(this, exchange, fee, interval, currency);
         };
 
         isRunning = true;
         record = null;
+        lastRecord = null;
 
         TraderDao.insert(this);
 
@@ -161,16 +163,18 @@ public class Trader extends Thread {
 
         OrderRequest orderRequest = null;
         while (isRunning) {
-            if (exchange != Exchange.MyExc) Thread.sleep(interval.getMillis());
+            if (exchange != Exchange.MyExc) Thread.sleep(interval.getMillisDividedByTwo());
             if ((record = iExc.fetchExcData()) == null) {
                 isRunning = false;
                 break;
-            }
-            if ((orderRequest = marketCheck(record)) != null) {
-                iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
-                updateTraderState(orderRequest);
-                if (traderState.stopLossEnable) isRunning = false;
-                break;
+            } else if (lastRecord == null || !(lastRecord.getDate().toString()).equals(record.getDate().toString())) {
+                lastRecord = record;
+                if ((orderRequest = marketCheck(record)) != null) {
+                    iExc.submitByConfirmation(orderRequest, RetryTimes.Normal);
+                    updateTraderState(orderRequest);
+                    if (traderState.stopLossEnable) isRunning = false;
+                    break;
+                }
             }
         }
     }
@@ -303,4 +307,5 @@ public class Trader extends Thread {
     public void setTraderSettings(TraderSettings traderSettings) {
         this.traderSettings = traderSettings;
     }
+
 }

@@ -2,6 +2,7 @@ package api.daos;
 
 import api.enums.Currency;
 import api.enums.Interval;
+import api.enums.UsablePercentage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,8 +42,8 @@ public class RecordDao {
 //        ps.setTimestamp(1, new java.sql.Timestamp(startMs));
 //        ps.setTimestamp(2, new java.sql.Timestamp(endMs));
 
-        ps.setTimestamp(1, new java.sql.Timestamp(startMs),java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
-        ps.setTimestamp(2, new java.sql.Timestamp(endMs),java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
+        ps.setTimestamp(1, new java.sql.Timestamp(startMs), java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
+        ps.setTimestamp(2, new java.sql.Timestamp(endMs), java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")));
 
 
         ResultSet rs = ps.executeQuery();
@@ -58,7 +59,7 @@ public class RecordDao {
                     rs.getDouble("high"),
                     rs.getDouble("low"),
                     rs.getDouble("close"),
-                    rs.getDouble("volume")
+                    rs.getDouble("volume") * UsablePercentage.Twenty_Percent.getRatio()
             ));
         }
 

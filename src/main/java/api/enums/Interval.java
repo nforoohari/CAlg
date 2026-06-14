@@ -35,6 +35,10 @@ public enum Interval {
         return millis;
     }
 
+    public long getMillisDividedByTwo() {
+        return (millis / 2);
+    }
+
     public static Interval fromCode(int code) {
         for (Interval c : Interval.values()) {
             if (c.getCode() == code) {
