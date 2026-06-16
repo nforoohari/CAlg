@@ -7,6 +7,7 @@ import api.enums.*;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;
 import api.traders.Trader;
+
 import org.json.JSONArray;
 
 import java.net.URI;
@@ -150,7 +151,7 @@ public class OprBinance implements IExc {
             double close = rowJson.getDouble(4);
             double volume = rowJson.getDouble(5);
 
-            records.add(new Record(currency, new Date(openTimeMs), open, high, low, close, volume));
+            records.add(new Record(currency, new Date(openTimeMs), open, high, low, close, volume * UsablePercentage.Twenty_Percent.getRatio()));
 
         }
         return records.getFirst();
@@ -239,5 +240,4 @@ public class OprBinance implements IExc {
 
         System.out.println("Cancel Response: " + response.body());
     }
-
 }

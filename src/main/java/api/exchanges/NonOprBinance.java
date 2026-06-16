@@ -99,13 +99,15 @@ public class NonOprBinance implements IExc {
 
             offlineCheckOrderStatus(orderRequest, record);
 
-            do {
-                Thread.sleep(interval.getMillisDividedByTwo());
-                record = fetchExcData();
-            } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
-            trader.lastRecord = record;
+            if (orderRequest.getState().getStatus() == Status.In_Progress) {
+                do {
+                    Thread.sleep(interval.getMillisDividedByTwo());
+                    record = fetchExcData();
+                } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+                trader.lastRecord = record;
 
-            n++;
+                n++;
+            }
         }
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
@@ -140,12 +142,12 @@ public class NonOprBinance implements IExc {
             double close = rowJson.getDouble(4);
             double volume = rowJson.getDouble(5);
 
-            Record record = new Record(currency, new Date(openTimeMs), open, high, low, close, volume);
-            System.out.println(record);
+            Record record = new Record(currency, new Date(openTimeMs), open, high, low, close, volume * UsablePercentage.Twenty_Percent.getRatio());
+//            System.out.println(record);
             records.add(record);
 
         }
-        System.out.println("the first" + records.getFirst());
+        System.out.println("The First Record : " + records.getFirst());
         return records.getFirst();
     }
 
@@ -157,7 +159,7 @@ public class NonOprBinance implements IExc {
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
             if (orderRequest.getSide() == Side.BUY && orderRequest.getState().getBalance() > 0) {
-                if (orderRequest.getPrice() > record.getLow()) {
+                if (orderRequest.getPrice() > record.getClose()) {
 
                     double price = orderRequest.getPrice();
                     double fee = orderRequest.getFee();
@@ -194,7 +196,7 @@ public class NonOprBinance implements IExc {
                     newOrderTransaction.setFee(fee);
                     newOrderTransaction.setVolume(Math.min(bought_volume, record.getVolume()));
                     newOrderTransaction.setBalance(Math.min(bought_volume, record.getVolume()) * price_and_fee);
-                    newOrderTransaction.setPayedFee(Math.min(bought_volume, record.getVolume()) * fee);
+                    newOrderTransaction.setPayedFee(Math.min(bought_volume, record.getVolume()) * price * (fee / 100));
                     newOrderTransaction.setDate(new Date());
 
                     orderRequest.getTransactions().add(newOrderTransaction);
@@ -204,7 +206,7 @@ public class NonOprBinance implements IExc {
             }
 
             if (orderRequest.getSide() == Side.SELL && orderRequest.getState().getVolume() > 0) {
-                if (orderRequest.getPrice() < record.getHigh()) {
+                if (orderRequest.getPrice() < record.getClose()) {
 
                     double price = orderRequest.getPrice();
                     double fee = orderRequest.getFee();
@@ -239,7 +241,7 @@ public class NonOprBinance implements IExc {
                     newOrderTransaction.setFee(fee);
                     newOrderTransaction.setVolume(Math.min(volume, record.getVolume()));
                     newOrderTransaction.setBalance(Math.min(volume, record.getVolume()) * price_minus_fee);
-                    newOrderTransaction.setPayedFee(Math.min(volume, record.getVolume()) * fee);
+                    newOrderTransaction.setPayedFee(Math.min(volume, record.getVolume()) * price * (fee / 100));
                     newOrderTransaction.setDate(new Date());
 
                     orderRequest.getTransactions().add(newOrderTransaction);
@@ -251,5 +253,4 @@ public class NonOprBinance implements IExc {
         }
 
     }
-
 }

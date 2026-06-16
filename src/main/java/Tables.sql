@@ -1,8 +1,8 @@
 CREATE
-    DATABASE currency;
+    DATABASE crypto;
 
 USE
-    currency;
+    crypto;
 
 CREATE TABLE crypto_day
 (

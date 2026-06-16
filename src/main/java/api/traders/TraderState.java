@@ -15,10 +15,10 @@ public class TraderState {
     public TraderState() {
     }
 
-    public TraderState(double volume, double balance, double payedFee) {
+    public TraderState(double volume, double balance) {
         this.volume = volume;
         this.balance = balance;
-        this.payedFee = payedFee;
+        this.payedFee = 0;
         this.stopLossEnable = false;
     }
 

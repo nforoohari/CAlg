@@ -2,7 +2,6 @@ package api.enums;
 
 public enum UsablePercentage {
 
-
     Five_Percent(5),
     Ten_Percent(10),
     Twenty_Percent(20),

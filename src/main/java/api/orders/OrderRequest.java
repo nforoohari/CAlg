@@ -105,9 +105,7 @@ public class OrderRequest {
         return state;
     }
 
-    public void setState(OrderState state) {
-        this.state = state;
-    }
+    public void setState(OrderState state) { this.state = state; }
 
     public List<OrderTransaction> getTransactions() {
         return transactions;

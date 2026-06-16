@@ -1,7 +1,6 @@
 package api.exchanges;
 
 import api.daos.Record;
-import api.enums.Currency;
 import api.enums.RetryTimes;
 import api.orders.OrderRequest;
 import api.orders.OrderStatus;

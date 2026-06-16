@@ -83,12 +83,14 @@ public class MyExc implements IExc {
 
             offlineCheckOrderStatus(orderRequest, record);
 
-            do {
-                record = fetchExcData();
-            } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
-            trader.lastRecord = record;
+            if (orderRequest.getState().getStatus() == Status.In_Progress) {
+                do {
+                    record = fetchExcData();
+                } while (trader.lastRecord != null && (trader.lastRecord.getDate().toString()).equals(record.getDate().toString()));
+                trader.lastRecord = record;
 
-            n++;
+                n++;
+            }
         }
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
@@ -110,7 +112,7 @@ public class MyExc implements IExc {
         if (orderRequest.getState().getStatus() == Status.In_Progress) {
 
             if (orderRequest.getSide() == Side.BUY && orderRequest.getState().getBalance() > 0) {
-                if (orderRequest.getPrice() > record.getLow()) {
+                if (orderRequest.getPrice() > record.getClose()) {
 
                     double price = orderRequest.getPrice();
                     double fee = orderRequest.getFee();
@@ -147,7 +149,7 @@ public class MyExc implements IExc {
                     newOrderTransaction.setFee(fee);
                     newOrderTransaction.setVolume(Math.min(bought_volume, record.getVolume()));
                     newOrderTransaction.setBalance(Math.min(bought_volume, record.getVolume()) * price_and_fee);
-                    newOrderTransaction.setPayedFee(Math.min(bought_volume, record.getVolume()) * fee);
+                    newOrderTransaction.setPayedFee(Math.min(bought_volume, record.getVolume()) * price * (fee / 100));
                     newOrderTransaction.setDate(new Date());
 
                     orderRequest.getTransactions().add(newOrderTransaction);
@@ -157,7 +159,7 @@ public class MyExc implements IExc {
             }
 
             if (orderRequest.getSide() == Side.SELL && orderRequest.getState().getVolume() > 0) {
-                if (orderRequest.getPrice() < record.getHigh()) {
+                if (orderRequest.getPrice() < record.getClose()) {
 
                     double price = orderRequest.getPrice();
                     double fee = orderRequest.getFee();
@@ -192,7 +194,7 @@ public class MyExc implements IExc {
                     newOrderTransaction.setFee(fee);
                     newOrderTransaction.setVolume(Math.min(volume, record.getVolume()));
                     newOrderTransaction.setBalance(Math.min(volume, record.getVolume()) * price_minus_fee);
-                    newOrderTransaction.setPayedFee(Math.min(volume, record.getVolume()) * fee);
+                    newOrderTransaction.setPayedFee(Math.min(volume, record.getVolume()) * price * (fee / 100));
                     newOrderTransaction.setDate(new Date());
 
                     orderRequest.getTransactions().add(newOrderTransaction);
@@ -203,37 +205,5 @@ public class MyExc implements IExc {
 
         }
 
-    }
-
-    public Interval getInterval() {
-        return interval;
-    }
-
-    public void setInterval(Interval interval) {
-        this.interval = interval;
-    }
-
-    public Currency getCrypto() {
-        return currency;
-    }
-
-    public void setCrypto(Currency currency) {
-        this.currency = currency;
-    }
-
-    public String getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
     }
 }

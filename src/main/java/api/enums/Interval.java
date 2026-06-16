@@ -19,9 +19,7 @@ public enum Interval {
         this.millis = millis;
     }
 
-    public int getCode() {
-        return code;
-    }
+    public int getCode() { return code; }
 
     public String getName() {
         return name;
